@@ -1,0 +1,202 @@
+/* Charts: each series has its own colour and its own dash, so a line reads without colour. */
+
+.chart {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  margin-top: 4px;
+}
+
+.chart-plot {
+  position: relative;
+  cursor: crosshair;
+}
+
+.chart-svg {
+  display: block;
+  overflow: visible;
+}
+
+.gridline,
+.baseline {
+  stroke: var(--line);
+}
+
+.tick {
+  fill: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}
+
+.line {
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+}
+
+.point {
+  stroke: var(--ground);
+  stroke-width: 1;
+}
+
+.stroke-1,
+.stroke-4,
+.stroke-7 {
+  stroke: var(--s1);
+}
+
+.stroke-2,
+.stroke-5,
+.stroke-8 {
+  stroke: var(--s2);
+}
+
+.stroke-3,
+.stroke-6 {
+  stroke: var(--s3);
+}
+
+.dash-2 {
+  stroke-dasharray: 6 4;
+}
+
+.dash-3 {
+  stroke-dasharray: 2 4;
+  stroke-linecap: round;
+}
+
+.dash-4 {
+  stroke-dasharray: 10 3 2 3;
+}
+
+.dash-5 {
+  stroke-dasharray: 1 3;
+  stroke-linecap: round;
+}
+
+.dash-6 {
+  stroke-dasharray: 12 4;
+}
+
+.dash-7 {
+  stroke-dasharray: 4 2;
+}
+
+.dash-8 {
+  stroke-dasharray: 8 3 1 3 1 3;
+}
+
+.fill-series-1,
+.fill-series-4,
+.fill-series-7 {
+  fill: var(--s1);
+  background: var(--s1);
+}
+
+.fill-series-2,
+.fill-series-5,
+.fill-series-8 {
+  fill: var(--s2);
+  background: var(--s2);
+}
+
+.fill-series-3,
+.fill-series-6 {
+  fill: var(--s3);
+  background: var(--s3);
+}
+
+.dot-active {
+  stroke: var(--ground);
+  stroke-width: 2;
+}
+
+.crosshair {
+  stroke: var(--ink-3);
+  stroke-dasharray: 3 3;
+}
+
+.swatch {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-line {
+  width: 22px;
+  height: 6px;
+  flex: none;
+  overflow: visible;
+}
+
+.legend-line line {
+  stroke-width: 2;
+}
+
+.legend-value {
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+
+.readout {
+  position: absolute;
+  top: 4px;
+  z-index: 2;
+  min-width: 180px;
+  margin-left: 12px;
+  padding: 6px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.readout-left {
+  transform: translateX(-100%);
+  margin-left: -12px;
+}
+
+.readout-title {
+  font-weight: 600;
+}
+
+.readout-sub,
+.readout-hint {
+  color: var(--ink-2);
+  font-size: 11px;
+}
+
+.readout-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.readout-name {
+  flex: 1;
+  color: var(--ink-2);
+}
+
+.readout-value {
+  font-family: var(--font-mono);
+}

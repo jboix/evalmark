@@ -1,0 +1,286 @@
+{
+  "evalId": "eval-k3T-2026-10-08T10:00:00",
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-08T10:00:00.000Z",
+    "prompts": [
+      {
+        "raw": "Answer the customer's question: {{question}}",
+        "label": "support-prompt",
+        "provider": "openai:chat:gpt-5-mini",
+        "metrics": { "score": 2, "testPassCount": 2, "testFailCount": 2, "testErrorCount": 0 }
+      }
+    ],
+    "results": [
+      {
+        "id": "r1",
+        "promptIdx": 0,
+        "testIdx": 0,
+        "promptId": "p1",
+        "description": "Refund policy",
+        "testCase": {
+          "description": "Refund policy",
+          "vars": { "question": "Can I get a refund after 40 days?" },
+          "assert": [
+            { "type": "contains", "value": "30 days" },
+            { "type": "llm-rubric", "value": "Is polite and does not promise a refund" }
+          ]
+        },
+        "provider": { "id": "openai:chat:gpt-5-mini", "label": "" },
+        "prompt": {
+          "raw": "Answer the customer's question: Can I get a refund after 40 days?",
+          "label": "support-prompt"
+        },
+        "vars": { "question": "Can I get a refund after 40 days?" },
+        "response": {
+          "output": "Refunds are available within 30 days of purchase, so I'm afraid not.",
+          "tokenUsage": { "total": 160, "prompt": 120, "completion": 40, "cached": 0 },
+          "cost": 0.00021,
+          "latencyMs": 812
+        },
+        "error": null,
+        "failureReason": 0,
+        "success": true,
+        "score": 1,
+        "latencyMs": 812,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": { "total": 300, "prompt": 250, "completion": 50, "cached": 0 },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": { "type": "contains", "value": "30 days" }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "The answer is polite and promises nothing.",
+              "assertion": {
+                "type": "llm-rubric",
+                "value": "Is polite and does not promise a refund"
+              }
+            }
+          ]
+        },
+        "namedScores": {},
+        "cost": 0.00021,
+        "tokenUsage": {
+          "total": 160,
+          "prompt": 120,
+          "completion": 40,
+          "cached": 0,
+          "numRequests": 1
+        },
+        "metadata": {}
+      },
+      {
+        "id": "r2",
+        "promptIdx": 0,
+        "testIdx": 2,
+        "promptId": "p1",
+        "description": "Refund policy",
+        "testCase": {
+          "description": "Refund policy",
+          "vars": { "question": "Can I get a refund after 40 days?" }
+        },
+        "provider": { "id": "openai:chat:gpt-5-mini", "label": "" },
+        "prompt": {
+          "raw": "Answer the customer's question: Can I get a refund after 40 days?",
+          "label": "support-prompt"
+        },
+        "vars": { "question": "Can I get a refund after 40 days?" },
+        "response": {
+          "output": "Sure, I've issued a refund for you.",
+          "tokenUsage": { "total": 150, "prompt": 120, "completion": 30, "cached": 0 },
+          "cost": 0.0002
+        },
+        "failureReason": 1,
+        "success": false,
+        "score": 0,
+        "latencyMs": 790,
+        "gradingResult": {
+          "pass": false,
+          "score": 0,
+          "reason": "Expected output to contain \"30 days\"",
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "Expected output to contain \"30 days\"",
+              "assertion": { "type": "contains", "value": "30 days" }
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "The answer promises a refund.",
+              "assertion": {
+                "type": "llm-rubric",
+                "value": "Is polite and does not promise a refund"
+              }
+            }
+          ]
+        },
+        "namedScores": {},
+        "cost": 0.0002,
+        "tokenUsage": {
+          "total": 150,
+          "prompt": 120,
+          "completion": 30,
+          "cached": 0,
+          "numRequests": 1
+        }
+      },
+      {
+        "id": "r3",
+        "promptIdx": 0,
+        "testIdx": 1,
+        "promptId": "p1",
+        "testCase": {
+          "vars": { "question": "What are your opening hours?" },
+          "assert": [{ "type": "icontains", "value": "9am", "metric": "hours" }]
+        },
+        "provider": { "id": "openai:chat:gpt-5-mini", "label": "" },
+        "prompt": {
+          "raw": "Answer the customer's question: What are your opening hours?",
+          "label": "support-prompt"
+        },
+        "vars": { "question": "What are your opening hours?" },
+        "response": { "error": "API error: 429 Too Many Requests" },
+        "error": "API error: 429 Too Many Requests",
+        "failureReason": 2,
+        "success": false,
+        "score": 0,
+        "latencyMs": 15,
+        "gradingResult": null,
+        "namedScores": {},
+        "cost": 0
+      },
+      {
+        "id": "r4",
+        "promptIdx": 0,
+        "testIdx": 0,
+        "promptId": "p1",
+        "description": "Refund policy",
+        "testCase": {
+          "description": "Refund policy",
+          "vars": { "question": "Can I get a refund after 40 days?" }
+        },
+        "provider": { "id": "anthropic:messages:claude-sonnet-5", "label": "sonnet" },
+        "prompt": {
+          "raw": "Answer the customer's question: Can I get a refund after 40 days?",
+          "label": "support-prompt"
+        },
+        "vars": { "question": "Can I get a refund after 40 days?" },
+        "response": {
+          "output": "Our refund window is 30 days, so this purchase is not eligible.",
+          "tokenUsage": { "total": 170, "prompt": 125, "completion": 45 }
+        },
+        "failureReason": 0,
+        "success": true,
+        "score": 1,
+        "latencyMs": 1020,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": { "type": "contains", "value": "30 days" }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Polite, promises nothing.",
+              "assertion": {
+                "type": "llm-rubric",
+                "value": "Is polite and does not promise a refund"
+              }
+            }
+          ]
+        },
+        "namedScores": {},
+        "cost": 0.0011,
+        "tokenUsage": { "total": 170, "prompt": 125, "completion": 45, "numRequests": 1 }
+      },
+      {
+        "id": "r5",
+        "promptIdx": 0,
+        "testIdx": 1,
+        "promptId": "p1",
+        "testCase": {
+          "vars": { "question": "What are your opening hours?" },
+          "assert": [{ "type": "icontains", "value": "9am", "metric": "hours" }]
+        },
+        "provider": { "id": "anthropic:messages:claude-sonnet-5", "label": "sonnet" },
+        "prompt": {
+          "raw": "Answer the customer's question: What are your opening hours?",
+          "label": "support-prompt"
+        },
+        "vars": { "question": "What are your opening hours?" },
+        "response": {
+          "output": "We are open from 9am to 6pm, Monday to Friday.",
+          "tokenUsage": { "total": 140, "prompt": 110, "completion": 30 }
+        },
+        "failureReason": 0,
+        "success": true,
+        "score": 1,
+        "latencyMs": 640,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": { "type": "icontains", "value": "9am", "metric": "hours" }
+            }
+          ]
+        },
+        "namedScores": { "hours": 1 },
+        "cost": 0.0009,
+        "tokenUsage": { "total": 140, "prompt": 110, "completion": 30, "numRequests": 1 }
+      }
+    ],
+    "stats": {
+      "successes": 3,
+      "failures": 1,
+      "errors": 1,
+      "tokenUsage": {
+        "total": 620,
+        "prompt": 475,
+        "completion": 145,
+        "cached": 0,
+        "numRequests": 4
+      },
+      "durationMs": 4210
+    }
+  },
+  "config": {
+    "description": "Customer support answers",
+    "prompts": ["Answer the customer's question: {{question}}"],
+    "providers": [
+      "openai:chat:gpt-5-mini",
+      { "id": "anthropic:messages:claude-sonnet-5", "label": "sonnet" }
+    ],
+    "tests": "tests.yaml"
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.121.0",
+    "nodeVersion": "v24.10.0",
+    "platform": "linux",
+    "arch": "x64",
+    "exportedAt": "2026-10-08T10:00:05.000Z",
+    "evaluationCreatedAt": "2026-10-08T10:00:00.000Z"
+  }
+}

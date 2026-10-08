@@ -1,0 +1,197 @@
+/* Tokens: a soft grey ground with white panels (charcoal in dark), a neutral palette, one accent
+   for links and focus, two self-hosted fonts (SIL OFL 1.1). */
+
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("../fonts/instrument-sans.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../fonts/jetbrains-mono.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  --font-text: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --ground: #f3f4f6;
+  --surface: #ffffff;
+  --sunk: #f7f8fa;
+  --ink: #1b1d22;
+  --ink-2: #4f545e;
+  --ink-3: #646a75;
+  --line: #e3e5e9;
+  --line-strong: #cfd3d9;
+  --accent: #0f6b63;
+  --pass: #1d5fd0;
+  --fail: #c2410c;
+  --fail-soft: #fdf1ea;
+  --fail-text: #b23b0b;
+  --flaky: #8a6400;
+  --error: #6d3fd6;
+  --skip: #8c8c96;
+  --s1: #0f6b63;
+  --s2: #6d3fd6;
+  --s3: #a3570a;
+  --radius: 6px;
+  --topbar-height: 57px;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2352525b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #1b1d21;
+    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23a8a8b1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    --surface: #24272c;
+    --sunk: #2b2f35;
+    --ink: #e9eaed;
+    --ink-2: #b3b7bf;
+    --ink-3: #9a9fa8;
+    --line: #353940;
+    --line-strong: #454a52;
+    --accent: #4fd1c1;
+    --pass: #6ea2ff;
+    --fail: #ff8f57;
+    --fail-soft: #2a1a12;
+    --fail-text: #ff9b68;
+    --flaky: #e4be4a;
+    --error: #a98bff;
+    --skip: #74747e;
+    --s1: #4fd1c1;
+    --s2: #a98bff;
+    --s3: #e9a23b;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #1b1d21;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23a8a8b1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --surface: #24272c;
+  --sunk: #2b2f35;
+  --ink: #e9eaed;
+  --ink-2: #b3b7bf;
+  --ink-3: #9a9fa8;
+  --line: #353940;
+  --line-strong: #454a52;
+  --accent: #4fd1c1;
+  --pass: #6ea2ff;
+  --fail: #ff8f57;
+  --fail-soft: #2a1a12;
+  --fail-text: #ff9b68;
+  --flaky: #e4be4a;
+  --error: #a98bff;
+  --skip: #74747e;
+  --s1: #4fd1c1;
+  --s2: #a98bff;
+  --s3: #e9a23b;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--ground);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--ground);
+  color: var(--ink);
+  font: 14.5px / 1.5 var(--font-text);
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+.mono,
+pre,
+code {
+  font-family: var(--font-mono);
+  font-variant-ligatures: none;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--ink-2);
+}
+
+.small {
+  font-size: 13px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.tone-good {
+  color: var(--pass);
+}
+
+.tone-bad {
+  color: var(--fail-text);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.strong {
+  font-weight: 500;
+}

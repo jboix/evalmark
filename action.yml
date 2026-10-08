@@ -1,0 +1,99 @@
+name: evalmark
+description: Record every eval run on a branch of your repository and explore the history on a static site.
+author: Josep Boix Requesens
+branding:
+  icon: activity
+  color: orange
+
+inputs:
+  result:
+    description: The result file your eval harness wrote (see docs/result-format.md). Required to record.
+    required: false
+  format:
+    description: "The result file's format: `auto` detects it; `evalmark`, `promptfoo`, `inspect` (Inspect AI) or `junit` (JUnit XML). A file with several models records one run per model."
+    default: auto
+  mode:
+    description: "`record` stores the run and publishes the site; `export` copies the stored site and data into `path`, for a site deployed from Actions."
+    default: record
+  branch:
+    description: The branch the data and the site live on, or a full ref such as `refs/evalmark/data`, which a normal clone does not fetch.
+    default: evalmark
+  folder:
+    description: The folder on that branch the action owns. It never writes outside it.
+    default: evalmark
+  suite:
+    description: The suite's name. Defaults to the result's `suite`, then to the repository's name.
+    required: false
+  labels:
+    description: Extra labels, one `key=value` per line, added over the result's own, such as the model a workflow input chose.
+    required: false
+  token:
+    description: The token used to push and to comment.
+    default: ${{ github.token }}
+  keep-runs:
+    description: How many runs to keep. Older runs are pruned. `0` keeps every run.
+    default: '500'
+  keep-days:
+    description: How many days of runs to keep. `0` keeps every day.
+    default: '0'
+  transcripts:
+    description: "Which transcripts to keep: `failed` (trials that did not pass), `all`, or `none`."
+    default: failed
+  keep-transcripts:
+    description: How many of the newest runs keep their transcripts. `0` keeps them on every run.
+    default: '30'
+  attachments:
+    description: "Which trials keep their attachment files, such as screenshots: `failed` (trials that did not pass), `all`, or `none`. A trial that does not keep them still records their type, caption and size."
+    default: failed
+  keep-attachments:
+    description: How many of the newest runs keep their attachment files. `0` keeps them on every run.
+    default: '10'
+  warn-size-mb:
+    description: Warn when the folder grows above this many megabytes. `0` never warns.
+    default: '100'
+  history:
+    description: "`auto` squashes the branch's history when pruning, unless the branch holds files outside the folder; `squash` always does; `keep` never does."
+    default: auto
+  comment:
+    description: Comment on the pull request with the comparison against its base branch.
+    default: 'true'
+  badges:
+    description: Write SVG badges for the default branch's latest run into the folder.
+    default: 'true'
+  title:
+    description: The dashboard's title, in its header and the browser tab.
+    default: evalmark
+  subtitle:
+    description: The line under the dashboard's title.
+    default: eval dashboard
+  logo:
+    description: An image in your repository shown beside the title (SVG, PNG, WebP, JPEG or GIF), such as `docs/logo.svg`. Without it, the dashboard shows evalmark's mark.
+    required: false
+  site-url:
+    description: The address the site is served at, for the links in the comment and the summary.
+    required: false
+  redact:
+    description: Extra strings to remove from everything stored, one per line, such as a secret the harness may echo.
+    required: false
+  path:
+    description: Where `export` mode copies the site and the data.
+    required: false
+  fail-on-error:
+    description: Fail the step when recording fails. By default a failure is a warning and the job goes on.
+    default: 'false'
+
+outputs:
+  run-id:
+    description: The recorded run's id.
+  pass-rate:
+    description: The run's pass rate, from 0 to 1.
+  recorded:
+    description: Whether the run was pushed.
+  run-url:
+    description: The run's page on the site, when `site-url` is set.
+  evalmark-size:
+    description: The folder's size on disk after recording, in bytes.
+
+runs:
+  using: node24
+  main: dist/index.js

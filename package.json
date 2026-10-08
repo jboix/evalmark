@@ -1,0 +1,90 @@
+{
+  "name": "evalmark",
+  "version": "0.0.0-development",
+  "description": "Eval history for your repository: record every run on a branch, explore it on a static site.",
+  "keywords": [
+    "evals",
+    "llm",
+    "ai",
+    "agents",
+    "evaluation",
+    "dashboard",
+    "github-action",
+    "promptfoo",
+    "inspect-ai",
+    "junit"
+  ],
+  "type": "module",
+  "bin": {
+    "evalmark": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
+    },
+    "./schema/result.v1.json": "./schema/result.v1.json"
+  },
+  "files": [
+    "dist",
+    "!dist/index.js",
+    "schema"
+  ],
+  "packageManager": "pnpm@11.25.0+sha512.5cde925b4f075f725eb71fbae18a42ffe784524789f19b61c731cb8721ec28aaee160e01a8d5af4fedb2a42cdbf300efe23db356b0d4a17b4d63e11f8ab7c956",
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsdown && vite build",
+    "check:dist": "pnpm run build && git diff --exit-code -- dist",
+    "demo": "pnpm run build && node dist/cli.js demo",
+    "site:dev": "vite",
+    "evalmark": "node src/cli/main.ts",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "docs:check": "remark . --quiet --frail --use ./scripts/remark-check-formatted.mjs",
+    "docs:format": "remark . --quiet --output",
+    "schema": "node scripts/write-schema.ts && biome format --write schema",
+    "arch": "depcruise src scripts --config .dependency-cruiser.cjs",
+    "knip": "knip",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "verify": "pnpm run lint && pnpm run docs:check && pnpm run arch && pnpm run knip && pnpm run typecheck && pnpm run test && pnpm run check:dist",
+    "prepare": "husky"
+  },
+  "license": "MIT",
+  "author": "Josep Boix Requesens",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jboix/evalmark.git"
+  },
+  "homepage": "https://github.com/jboix/evalmark#readme",
+  "bugs": {
+    "url": "https://github.com/jboix/evalmark/issues"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "@semantic-release/exec": "^7.1.0",
+    "@types/node": "^24.19.1",
+    "dependency-cruiser": "^18.5.0",
+    "husky": "^9.1.7",
+    "knip": "^6.39.0",
+    "preact": "^11.0.0",
+    "remark-cli": "^12.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-validate-links": "^13.1.0",
+    "semantic-release": "^25.0.9",
+    "tsdown": "^0.23.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.5"
+  }
+}

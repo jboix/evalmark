@@ -1,0 +1,8 @@
+node_modules/
+coverage/
+.demo/
+*.log
+.DS_Store
+.idea/
+page/
+*.swp

@@ -1,0 +1,154 @@
+/* Statuses: every mark has a shape as well as a colour. */
+
+.m {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  flex: none;
+  vertical-align: -1px;
+}
+
+.m-pass {
+  background: var(--pass);
+  border-radius: 50%;
+}
+
+.m-fail {
+  background: var(--fail);
+  clip-path: polygon(
+    20% 0,
+    50% 30%,
+    80% 0,
+    100% 20%,
+    70% 50%,
+    100% 80%,
+    80% 100%,
+    50% 70%,
+    20% 100%,
+    0 80%,
+    30% 50%,
+    0 20%
+  );
+}
+
+.m-flaky {
+  border: 2px solid var(--flaky);
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--flaky) 50%, transparent 50%);
+}
+
+.m-error {
+  background: var(--error);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.m-skip {
+  border: 2px solid var(--skip);
+  border-radius: 50%;
+}
+
+.mark-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.mark-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-word {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+a.status-word {
+  color: var(--ink);
+}
+
+.status-fail,
+.status-error {
+  color: var(--fail-text);
+}
+
+.strip,
+.trial-marks {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.strip {
+  gap: 1px;
+}
+
+.strip-link,
+.mark-link {
+  display: inline-flex;
+  padding: 6px 2px;
+  border-radius: 3px;
+}
+
+.strip-link:hover,
+.mark-link:hover {
+  background: var(--sunk);
+}
+
+.strip .m {
+  width: 10px;
+  height: 10px;
+}
+
+.trial-marks {
+  gap: 2px;
+}
+
+.trial-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.trial-mark:hover {
+  background: var(--sunk);
+}
+
+.picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  color: var(--ink-2);
+}
+
+.pick:hover {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.pick[aria-current="page"] {
+  color: var(--ink);
+  font-weight: 600;
+}

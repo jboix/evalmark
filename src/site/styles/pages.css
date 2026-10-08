@@ -1,0 +1,47 @@
+/* Page parts: the summary line, a case's question and its checks. */
+
+.summary {
+  margin: 4px 0 0;
+}
+
+.quote {
+  margin: 0 0 8px;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--line-strong);
+  max-width: 820px;
+  font-size: 15px;
+  white-space: pre-wrap;
+}
+
+.quote + .muted {
+  max-width: 820px;
+  font-size: 13.5px;
+}
+
+.check-counts {
+  max-width: 820px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.check-counts li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.check-name {
+  min-width: 0;
+}
+
+.input-text {
+  max-width: 820px;
+  color: var(--ink-2);
+  white-space: pre-wrap;
+}

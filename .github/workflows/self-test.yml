@@ -1,0 +1,48 @@
+# Dogfoods the action: runs this repository's own action (`uses: ./`) on a fixture result, so every
+# change to the action records a real run. A push to main records on the `evalmark-self-test` branch;
+# a pull request from this repository records too and gets the comparison comment. A pull request
+# from a fork has a read-only token, so the action records nothing there.
+name: Self-test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: self-test-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  self-test:
+    name: Record the fixture with the action
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Record the run
+        id: evalmark
+        uses: ./
+        with:
+          result: test/fixtures/result.json
+          branch: evalmark-self-test
+          fail-on-error: 'true'
+
+      - name: Show the outputs
+        env:
+          RUN_ID: ${{ steps.evalmark.outputs.run-id }}
+          PASS_RATE: ${{ steps.evalmark.outputs.pass-rate }}
+          RECORDED: ${{ steps.evalmark.outputs.recorded }}
+        run: echo "Run ${RUN_ID}, pass rate ${PASS_RATE}, recorded ${RECORDED}"

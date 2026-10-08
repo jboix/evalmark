@@ -1,0 +1,210 @@
+{
+  "version": 2,
+  "status": "success",
+  "eval": {
+    "eval_id": "Yh3kQ9x2",
+    "run_id": "Rr8mPq1z",
+    "created": "2026-10-08T10:00:00+00:00",
+    "task": "weather_agent",
+    "task_id": "Tk2nWb7c",
+    "task_version": 0,
+    "task_file": "weather.py",
+    "task_attribs": {},
+    "task_args": {},
+    "dataset": { "name": "weather", "samples": 2, "sample_ids": ["paris", 2], "shuffled": false },
+    "model": "anthropic/claude-sonnet-5",
+    "model_generate_config": {},
+    "model_args": {},
+    "config": { "epochs": 2, "epochs_reducer": ["mean"], "log_samples": true },
+    "packages": { "inspect_ai": "0.3.140" },
+    "scorers": [{ "name": "includes", "options": {}, "metrics": [{ "name": "accuracy" }] }]
+  },
+  "plan": {
+    "name": "plan",
+    "steps": [{ "solver": "use_tools", "params": {} }, { "solver": "generate", "params": {} }],
+    "config": {}
+  },
+  "results": {
+    "total_samples": 4,
+    "completed_samples": 4,
+    "scores": [
+      {
+        "name": "includes",
+        "scorer": "includes",
+        "reducer": "mean",
+        "params": {},
+        "metrics": { "accuracy": { "name": "accuracy", "value": 0.5, "params": {} } }
+      }
+    ]
+  },
+  "stats": {
+    "started_at": "2026-10-08T10:00:01+00:00",
+    "completed_at": "2026-10-08T10:01:31+00:00",
+    "model_usage": {
+      "anthropic/claude-sonnet-5": {
+        "input_tokens": 4200,
+        "output_tokens": 610,
+        "total_tokens": 4810,
+        "total_cost": 0.0218
+      }
+    }
+  },
+  "samples": [
+    {
+      "id": "paris",
+      "epoch": 1,
+      "input": "What is the weather in Paris right now?",
+      "target": "sunny",
+      "messages": [
+        {
+          "id": "m1",
+          "role": "system",
+          "content": "attachment://3f2a9c",
+          "source": "input"
+        },
+        {
+          "id": "m2",
+          "role": "user",
+          "content": "What is the weather in Paris right now?",
+          "source": "input"
+        },
+        {
+          "id": "m3",
+          "role": "assistant",
+          "content": [{ "type": "reasoning", "reasoning": "I should call the tool." }],
+          "source": "generate",
+          "tool_calls": [
+            {
+              "id": "toolu_01",
+              "function": "get_weather",
+              "arguments": { "city": "Paris" },
+              "type": "function"
+            }
+          ],
+          "model": "claude-sonnet-5"
+        },
+        {
+          "id": "m4",
+          "role": "tool",
+          "content": "{\"city\": \"Paris\", \"sky\": \"sunny\", \"celsius\": 21}",
+          "tool_call_id": "toolu_01",
+          "function": "get_weather"
+        },
+        {
+          "id": "m5",
+          "role": "assistant",
+          "content": [{ "type": "text", "text": "It is sunny in Paris, 21°C." }],
+          "source": "generate",
+          "model": "claude-sonnet-5"
+        }
+      ],
+      "output": {
+        "model": "claude-sonnet-5",
+        "choices": [],
+        "completion": "It is sunny in Paris, 21°C.",
+        "usage": { "input_tokens": 1100, "output_tokens": 160, "total_tokens": 1260 },
+        "time": 3.2
+      },
+      "scores": {
+        "includes": {
+          "value": "C",
+          "answer": "It is sunny in Paris, 21°C.",
+          "explanation": "sunny"
+        }
+      },
+      "metadata": {},
+      "store": {},
+      "events": [],
+      "model_usage": {
+        "anthropic/claude-sonnet-5": {
+          "input_tokens": 1100,
+          "output_tokens": 160,
+          "total_tokens": 1260,
+          "total_cost": 0.0057
+        }
+      },
+      "total_time": 4.1,
+      "working_time": 3.9,
+      "uuid": "s-paris-1",
+      "attachments": { "3f2a9c": "You are a weather assistant. Use the get_weather tool." }
+    },
+    {
+      "id": "paris",
+      "epoch": 2,
+      "input": "What is the weather in Paris right now?",
+      "target": "sunny",
+      "messages": [
+        { "role": "user", "content": "What is the weather in Paris right now?" },
+        {
+          "role": "assistant",
+          "content": "",
+          "tool_calls": [
+            { "id": "toolu_02", "function": "get_weather", "arguments": { "city": "Pariss" } }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": "",
+          "tool_call_id": "toolu_02",
+          "function": "get_weather",
+          "error": { "type": "unknown", "message": "Unknown city: Pariss" }
+        },
+        { "role": "assistant", "content": "I could not find the weather for Paris." }
+      ],
+      "output": { "completion": "I could not find the weather for Paris." },
+      "scores": {
+        "includes": {
+          "value": "I",
+          "answer": "I could not find the weather for Paris.",
+          "explanation": "The answer does not include the target."
+        }
+      },
+      "model_usage": {
+        "anthropic/claude-sonnet-5": {
+          "input_tokens": 1000,
+          "output_tokens": 150,
+          "total_cost": 0.0052
+        }
+      },
+      "total_time": 3.6
+    },
+    {
+      "id": 2,
+      "epoch": 2,
+      "input": [{ "role": "user", "content": "Will it rain in Oslo tomorrow?" }],
+      "target": ["rain", "showers"],
+      "messages": [{ "role": "user", "content": "Will it rain in Oslo tomorrow?" }],
+      "output": { "completion": "" },
+      "scores": {},
+      "error": {
+        "message": "RateLimitError: 429 Too Many Requests",
+        "traceback": "Traceback (most recent call last): ...",
+        "traceback_ansi": ""
+      },
+      "total_time": 0.4
+    },
+    {
+      "id": 2,
+      "epoch": 1,
+      "input": [{ "role": "user", "content": "Will it rain in Oslo tomorrow?" }],
+      "target": ["rain", "showers"],
+      "messages": [
+        { "role": "user", "content": "Will it rain in Oslo tomorrow?" },
+        { "role": "assistant", "content": "Light showers are expected in Oslo tomorrow." }
+      ],
+      "output": { "completion": "Light showers are expected in Oslo tomorrow." },
+      "scores": {
+        "includes": { "value": "P", "explanation": "Mentions showers, not rain." },
+        "rubric": { "value": { "accuracy": 1, "tone": "C", "brevity": 0.5 } }
+      },
+      "model_usage": {
+        "anthropic/claude-sonnet-5": {
+          "input_tokens": 2100,
+          "output_tokens": 300,
+          "total_cost": 0.0109
+        }
+      },
+      "total_time": 5.2
+    }
+  ]
+}

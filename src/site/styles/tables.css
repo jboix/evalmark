@@ -1,0 +1,189 @@
+/* Tables: the page scrolls them, their header sticks under the top bar, and the header band
+   runs to the panel's edges. Only a table wider than a phone screen scrolls sideways, in its box. */
+
+.table-box {
+  margin: 0 -20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.table th,
+.table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.table th:first-child,
+.table td:first-child {
+  padding-left: 20px;
+}
+
+.table th:last-child,
+.table td:last-child {
+  padding-right: 20px;
+}
+
+.table thead th {
+  position: sticky;
+  top: var(--topbar-height);
+  z-index: 1;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--sunk);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ink-2);
+}
+
+.table tbody tr:hover > * {
+  background: var(--sunk);
+}
+
+.table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .table-box {
+    overflow-x: auto;
+  }
+
+  .table thead th {
+    top: 0;
+  }
+}
+
+.table tbody th {
+  font-weight: 500;
+}
+
+.table .num {
+  text-align: right;
+}
+
+.table thead th.num {
+  font-family: var(--font-text);
+  font-size: 12.5px;
+}
+
+.case-cell a {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.table td.wrap {
+  white-space: normal;
+  min-width: 180px;
+  max-width: 420px;
+}
+
+.case-cell {
+  white-space: normal;
+  min-width: 200px;
+}
+
+.sub {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+.wrap .sub {
+  color: var(--fail-text);
+  margin-top: 2px;
+}
+
+.sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sort:hover {
+  color: var(--ink);
+}
+
+[aria-sort] .sort {
+  color: var(--ink);
+}
+
+.sort-arrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.sort-idle {
+  opacity: 0;
+}
+
+.sort:hover .sort-idle,
+.sort:focus-visible .sort-idle {
+  opacity: 0.5;
+}
+
+th.num .sort,
+[aria-sort].num .sort {
+  flex-direction: row-reverse;
+}
+
+.tick-cell {
+  width: 28px;
+}
+
+.tick-cell input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+  vertical-align: middle;
+}
+
+.count-line {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-bottom: 8px;
+}
+
+.matrix-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.change-regressed {
+  color: var(--fail-text);
+  font-weight: 600;
+}
+
+.change-fixed {
+  color: var(--pass);
+  font-weight: 600;
+}
+
+.change-same {
+  color: var(--ink-2);
+}
+
+@media (max-width: 640px) {
+  .case-cell {
+    min-width: 150px;
+  }
+}
