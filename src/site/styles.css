@@ -1,0 +1,11 @@
+/* evalmark's dashboard: one stylesheet, bundled from its parts; the theme is light, dark or the system's. */
+
+@import "./styles/tokens.css";
+@import "./styles/frame.css";
+@import "./styles/controls.css";
+@import "./styles/tables.css";
+@import "./styles/statuses.css";
+@import "./styles/charts.css";
+@import "./styles/pages.css";
+@import "./styles/transcript.css";
+@import "./styles/states.css";

@@ -1,0 +1,48 @@
+name: 🐛 Bug Report
+description: Report a possible bug or regression
+title: "🐛 <TITLE>"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Please provide a clear and concise
+        description of what the bug is; reports that cannot be reproduced
+        take much longer to fix. Report a security problem privately, as
+        SECURITY.md describes, never in an issue.
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment information
+      description: >
+        The evalmark version or commit your workflow uses (`jboix/evalmark@…`),
+        the runner (such as `ubuntu-latest`), and the action's inputs. For a
+        dashboard problem, the browser and its version. Remove tokens and
+        private data before posting.
+      value: |
+        <details>
+
+        ```yaml
+        Paste the workflow step here
+        ```
+
+        </details>
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: What happened?
+      description: >
+        The steps that reproduce the issue, with the action's log or the
+        dashboard view (its address after the #). A small result file that
+        shows the problem helps most.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected result
+      description: What you expected to happen instead.
+    validations:
+      required: true

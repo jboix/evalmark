@@ -1,0 +1,342 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jboix.github.io/evalmark/schema/result.v1.json",
+  "title": "evalmark result, version 1",
+  "description": "One run of an eval suite, as its harness writes it for the evalmark action.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "description": "This format's JSON Schema, for editors.",
+      "type": "string"
+    },
+    "version": {
+      "type": "number",
+      "const": 1,
+      "description": "The result format's version."
+    },
+    "suite": {
+      "description": "The suite's name, such as the repository's.",
+      "type": "string",
+      "minLength": 1
+    },
+    "startedAt": {
+      "description": "When the run started.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "durationMs": {
+      "description": "How long the run took.",
+      "type": "number",
+      "minimum": 0
+    },
+    "labels": {
+      "description": "What to group and compare runs by, such as a \"model\" label.",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "cases": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The case's id, stable from run to run."
+          },
+          "title": {
+            "description": "The case's name on the dashboard.",
+            "type": "string"
+          },
+          "description": {
+            "description": "What the case is about.",
+            "type": "string"
+          },
+          "input": {
+            "description": "What the case asks the agent.",
+            "type": "string"
+          },
+          "tags": {
+            "description": "Tags to filter cases by.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "checks": {
+            "description": "The checks every trial gets.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The check's id, as the trials' check results name it."
+                },
+                "description": {
+                  "description": "What the check makes sure of, in words.",
+                  "type": "string"
+                }
+              },
+              "required": ["id"],
+              "description": "A check the case makes on every trial."
+            }
+          },
+          "trials": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": ["pass", "fail", "error", "skip"],
+                  "description": "pass, fail (a check failed), error (the trial did not finish), or skip."
+                },
+                "score": {
+                  "description": "A score from 0 to 1, when the case has one.",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "durationMs": {
+                  "description": "How long the trial took.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "usage": {
+                  "type": "object",
+                  "properties": {
+                    "inputTokens": {
+                      "description": "Tokens sent to the model.",
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "outputTokens": {
+                      "description": "Tokens the model wrote.",
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "costUsd": {
+                      "description": "What it cost, in US dollars.",
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "description": "Tokens and money spent."
+                },
+                "checks": {
+                  "description": "Each check's result.",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "The check's id."
+                      },
+                      "pass": {
+                        "type": "boolean",
+                        "description": "Whether the trial passed the check."
+                      },
+                      "message": {
+                        "description": "What the check found, shown when it failed.",
+                        "type": "string"
+                      }
+                    },
+                    "required": ["id", "pass"],
+                    "description": "What one check found on this trial."
+                  }
+                },
+                "error": {
+                  "description": "Why the trial errored, or failed.",
+                  "type": "string"
+                },
+                "output": {
+                  "description": "The agent's final answer.",
+                  "type": "string"
+                },
+                "attachments": {
+                  "description": "Images, such as screenshots, shown where they belong on the dashboard.",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "The file's path, relative to the result file, inside its folder."
+                      },
+                      "mediaType": {
+                        "type": "string",
+                        "enum": ["image/png", "image/jpeg", "image/webp", "image/gif"],
+                        "description": "The image's type."
+                      },
+                      "caption": {
+                        "description": "What the image shows, under it on the dashboard.",
+                        "type": "string"
+                      }
+                    },
+                    "required": ["path", "mediaType"],
+                    "description": "A file saved next to the result, such as a screenshot of what the agent built."
+                  }
+                },
+                "transcript": {
+                  "description": "The conversation, message by message, with the tool calls.",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "role": {
+                        "type": "string",
+                        "enum": ["system", "user", "assistant", "tool"],
+                        "description": "Who wrote the message."
+                      },
+                      "content": {
+                        "description": "The message's text.",
+                        "type": "string"
+                      },
+                      "toolCalls": {
+                        "description": "The tools the model called.",
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "description": "The call's id, as the model gave it.",
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "The tool's name."
+                            },
+                            "input": {
+                              "description": "What the model sent: any JSON value."
+                            },
+                            "output": {
+                              "description": "What the tool returned: any JSON value."
+                            },
+                            "error": {
+                              "description": "The error the tool returned, when it failed.",
+                              "type": "string"
+                            },
+                            "durationMs": {
+                              "description": "How long the call took.",
+                              "type": "number",
+                              "minimum": 0
+                            },
+                            "attachments": {
+                              "description": "Images, such as screenshots, shown where they belong on the dashboard.",
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "path": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "description": "The file's path, relative to the result file, inside its folder."
+                                  },
+                                  "mediaType": {
+                                    "type": "string",
+                                    "enum": ["image/png", "image/jpeg", "image/webp", "image/gif"],
+                                    "description": "The image's type."
+                                  },
+                                  "caption": {
+                                    "description": "What the image shows, under it on the dashboard.",
+                                    "type": "string"
+                                  }
+                                },
+                                "required": ["path", "mediaType"],
+                                "description": "A file saved next to the result, such as a screenshot of what the agent built."
+                              }
+                            }
+                          },
+                          "required": ["name"],
+                          "description": "One call the model made to a tool."
+                        }
+                      },
+                      "at": {
+                        "description": "When the message was written.",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "usage": {
+                        "type": "object",
+                        "properties": {
+                          "inputTokens": {
+                            "description": "Tokens sent to the model.",
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          "outputTokens": {
+                            "description": "Tokens the model wrote.",
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          "costUsd": {
+                            "description": "What it cost, in US dollars.",
+                            "type": "number",
+                            "minimum": 0
+                          }
+                        },
+                        "description": "Tokens and money spent."
+                      },
+                      "attachments": {
+                        "description": "Images, such as screenshots, shown where they belong on the dashboard.",
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "path": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "The file's path, relative to the result file, inside its folder."
+                            },
+                            "mediaType": {
+                              "type": "string",
+                              "enum": ["image/png", "image/jpeg", "image/webp", "image/gif"],
+                              "description": "The image's type."
+                            },
+                            "caption": {
+                              "description": "What the image shows, under it on the dashboard.",
+                              "type": "string"
+                            }
+                          },
+                          "required": ["path", "mediaType"],
+                          "description": "A file saved next to the result, such as a screenshot of what the agent built."
+                        }
+                      }
+                    },
+                    "required": ["role"],
+                    "description": "One message of the conversation."
+                  }
+                }
+              },
+              "required": ["status"],
+              "description": "One attempt at the case."
+            },
+            "description": "Its trials: one or more attempts, to show how stable the agent is."
+          }
+        },
+        "required": ["id", "trials"],
+        "description": "One eval case."
+      },
+      "description": "The cases that ran."
+    }
+  },
+  "required": ["version", "cases"]
+}

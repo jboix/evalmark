@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Written by a test runner, two suites, one per model. -->
+<testsuites name="agent evals" tests="6" failures="1" errors="1" skipped="1" time="12.5">
+  <testsuite name="orders" tests="4" failures="1" errors="1" skipped="1" time="8.25"
+             timestamp="2026-10-08T10:00:00" hostname="runner-1">
+    <properties>
+      <property name="model" value="gemini-3.8-flash"/>
+      <property name="provider" value="google"/>
+    </properties>
+    <testcase classname="evals.orders" name="orders per day" time="2.5">
+      <system-out><![CDATA[SELECT date_trunc('day', created_at) <ok>]]></system-out>
+    </testcase>
+    <testcase classname="evals.orders" name="revenue &amp; refunds" time="3.75">
+      <failure message="expected count &gt; 0, got 0" type="AssertionError">at evals/orders.test.ts:42
+  expect(rows.length > 0)</failure>
+    </testcase>
+    <testcase classname="evals.orders" name="timeout" time="2">
+      <error message="Timed out after 2s" type="TimeoutError"/>
+    </testcase>
+    <testcase classname="evals.orders" name="needs clickhouse">
+      <skipped message="no ClickHouse in this environment"/>
+    </testcase>
+  </testsuite>
+  <testsuite name="orders" tests="2" failures="0" time="4.25" timestamp="2026-10-08T10:00:05Z">
+    <properties>
+      <property name="model">claude-sonnet-5</property>
+    </properties>
+    <testcase classname="evals.orders" name="orders per day" time="2.25"/>
+    <testcase classname="evals.orders" name="orders per day" time="2"/>
+  </testsuite>
+</testsuites>
