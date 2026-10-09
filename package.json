@@ -1,6 +1,6 @@
 {
   "name": "evalmark",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Eval history for your repository: record every run on a branch, explore it on a static site.",
   "keywords": [
     "evals",
