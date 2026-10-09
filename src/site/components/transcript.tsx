@@ -74,7 +74,7 @@ function Timeline(props: { readonly messages: readonly StoredMessage[] }) {
   return (
     <Section
       title={title}
-      hint={`${plural(counts.messages, 'step')}, ${plural(counts.toolCalls, 'tool call')}${failed}.`}
+      hint={`${plural(counts.messages, 'step')}, ${plural(counts.toolCalls, 'tool call')}${failed}. Model output, as your harness recorded it.`}
     >
       <ol class="timeline">
         {timelineOf(props.messages).map((step) => (

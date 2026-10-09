@@ -284,6 +284,12 @@ Above `warn-size-mb` (100 MB by default), the run also warns. To make the folder
 - Attachments, such as screenshots, are stored as they are. Redaction applies to text, not images.
 - The action redacts values that look like secrets before it stores anything. The `redact` input
   adds strings of your own.
+- Transcripts and outputs can hold personal data, from your sources or your prompts. What your
+  harness records is yours to decide: leave such data out of the result file, or list it in
+  `redact`.
+- Transcripts and outputs are model output, recorded as your harness wrote them. evalmark calls no
+  model itself; it stores and shows what your evals produced. Report a problem with evalmark in
+  [its issues](https://github.com/jboix/evalmark/issues).
 
 ## Your own title and logo
 
