@@ -18,7 +18,7 @@
 #
 # The job runs in the `release` environment, which deploys from main only, and npm's trusted
 # publisher for `evalmark` names this repository, this workflow and that environment: no other job
-# can publish the package (see "Repository settings" in CONTRIBUTING.md).
+# can publish the package.
 name: Release
 
 on:

@@ -1,7 +1,7 @@
 # Agent guide: evalmark
 
-Read this fully before writing code, then [`CONTRIBUTING.md`](CONTRIBUTING.md): the layout, the
-module boundaries and how evalmark works.
+Read this fully before writing code, then [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md): the layout
+and the module boundaries.
 
 ## What this project is
 
@@ -70,7 +70,7 @@ Documentation, comments, commit messages and user-facing strings use direct lang
 - Write plain declarative sentences. State the fact, then at most one sentence of why.
 - No em-dashes. Use commas, colons, parentheses, periods.
 - One fact per bullet. Paragraphs of one to three short sentences.
-- When the code changes a documented behaviour, update the README, `CONTRIBUTING.md` or `docs/` in
+- When the code changes a documented behaviour, update the README or `docs/` in
   the same commit.
 
 ## Commits

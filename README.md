@@ -418,9 +418,9 @@ The [releases](https://github.com/jboix/evalmark/releases) list what changed in 
 
 ## Contributing
 
-[CONTRIBUTING.md](CONTRIBUTING.md) has the setup, the checks, the layout and how evalmark works.
-Security problems go through [SECURITY.md](SECURITY.md), and everyone follows the
-[Code of Conduct](CODE_OF_CONDUCT.md).
+[The contributing guide](docs/CONTRIBUTING.md) has the setup, the layout and how releases work.
+Security problems go through [the security policy](docs/SECURITY.md), and everyone follows the
+[Code of Conduct](docs/CODE_OF_CONDUCT.md).
 
 ## License
 
