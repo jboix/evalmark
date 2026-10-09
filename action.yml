@@ -1,4 +1,4 @@
-name: evalmark
+name: evalmark-action
 description: Record every eval run on a branch of your repository and explore the history on a static site.
 author: Josep Boix Requesens
 branding:
