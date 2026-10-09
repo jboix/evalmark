@@ -5715,6 +5715,7 @@ function datetime(params) {
 * few lines; each field added makes the dashboard richer. The descriptions here become the JSON
 * Schema's, which editors show on hover.
 */
+config({ jitless: true });
 /** Tokens and money one trial, or one message, spent. */
 const usageSchema$1 = object({
 	inputTokens: number().int().nonnegative().optional().describe("Tokens sent to the model."),

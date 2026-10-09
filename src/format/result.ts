@@ -5,6 +5,11 @@
  * Schema's, which editors show on hover.
  */
 import { z } from 'zod';
+
+// Validate without generating code: zod's fast path compiles validators with `new Function`, and
+// nothing in evalmark builds code at runtime.
+z.config({ jitless: true });
+
 import { resultVersion } from './result-types.ts';
 
 export type {
