@@ -1,6 +1,6 @@
 {
   "name": "evalmark",
-  "version": "0.0.0-development",
+  "version": "1.0.0",
   "description": "Eval history for your repository: record every run on a branch, explore it on a static site.",
   "keywords": [
     "evals",
@@ -71,6 +71,7 @@
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
     "@types/node": "^24.19.1",
     "dependency-cruiser": "^18.5.0",
     "husky": "^9.1.7",

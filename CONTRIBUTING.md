@@ -114,10 +114,12 @@ checks. The type sets the release:
 - A `BREAKING CHANGE:` footer releases a major version. A `!` after the type is not read.
 - `docs`, `chore`, `ci`, `test`, `build` and `refactor` release nothing.
 
-Once Quality passes on `main`, the Release workflow runs semantic-release: it publishes the
-package `evalmark` to npm with the committed `dist/`, tags the commit `vX.Y.Z`, creates the GitHub
-Release with its notes, and moves the major tag (`v1`) to it. The version lives in the tag and on
-npm, never in a commit: `package.json` says `0.0.0-development`.
+Once Quality passes on `main`, the Release workflow runs semantic-release: it commits the new
+version in `package.json` as `chore(release): X.Y.Z [skip ci]`, tags that commit `vX.Y.Z`,
+publishes the package `evalmark` to npm with the committed `dist/`, creates the GitHub Release with
+its notes, and moves the major tag (`v1`) to it. It pushes with the release bot's token, a GitHub
+App the `main` ruleset lets push without a pull request, whose `RELEASE_APP_ID` and
+`RELEASE_APP_PRIVATE_KEY` are secrets of the `release` environment.
 
 Husky runs Biome on staged files before a commit, commitlint on the message, and
 `pnpm run verify` before a push.
@@ -132,7 +134,8 @@ Four settings no commit makes:
   Workflow permissions: read and write).
 - The `release` environment exists and deploys from `main` only (Settings, Environments, New
   environment `release`, Deployment branches and tags: Selected branches, `main`). The Release job
-  runs in it. It holds no secret.
+  runs in it. It holds the release bot's secrets, `RELEASE_APP_ID` and `RELEASE_APP_PRIVATE_KEY`,
+  and the bot (a GitHub App) is installed on the repository and may bypass the `main` ruleset.
 - npm trusts the Release workflow to publish `evalmark`, without a token, and only from that
   environment. On npmjs.com, the package's Settings, Trusted publishing, GitHub Actions:
   organization or user `jboix`, repository `evalmark`, workflow `release.yml`, environment

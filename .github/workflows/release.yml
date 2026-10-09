@@ -4,15 +4,17 @@
 #     minor, a `BREAKING CHANGE:` footer a major, anything else nothing;
 #   - it publishes the package `evalmark` to npm at that version, with the committed dist/, through
 #     npm trusted publishing (OIDC, no token) with provenance;
-#   - it tags the commit vX.Y.Z and creates the GitHub Release with its notes. It makes no
-#     commit: a version lives in its tag, and GitHub runs the action from the tagged commit's
-#     committed dist/, which Quality has just checked against the sources;
+#   - it commits the version in package.json as `chore(release): X.Y.Z [skip ci]`, tags that
+#     commit vX.Y.Z and creates the GitHub Release with its notes. GitHub runs the action from the
+#     tagged commit's committed dist/, which Quality has just checked against the sources;
 #   - it moves the major tag (v1) to the release, so `uses: jboix/evalmark@v1` follows it.
 #
 # It runs after Quality rather than on the push itself, so a commit that fails a check is never
-# released, and it builds nothing: npm gets the dist/ Quality checked. Checkout keeps no
-# credentials: semantic-release and the major tag script push with the token in their
-# environment.
+# released, and it builds nothing: npm gets the dist/ Quality checked. The main branch's ruleset
+# lets only the release bot (a GitHub App) push without a pull request, so the job mints the
+# App's token for the release commit, the tags and the GitHub Release; the workflow's own token
+# only reads. Checkout keeps no credentials: semantic-release and the major tag script push with
+# the token in their environment.
 #
 # The job runs in the `release` environment, which deploys from main only, and npm's trusted
 # publisher for `evalmark` names this repository, this workflow and that environment: no other job
@@ -43,9 +45,7 @@ jobs:
     timeout-minutes: 10
     environment: release
     permissions:
-      contents: write # the tags and the GitHub Release
-      issues: write # semantic-release comments on issues a release fixes
-      pull-requests: write # and on the pull requests it ships
+      contents: read # the App's token writes, not this one
       id-token: write # npm trusted publishing, with provenance
     steps:
       - name: Check out
@@ -75,9 +75,20 @@ jobs:
           HUSKY: "0"
         run: pnpm install --frozen-lockfile --ignore-scripts
 
-      # Before npm publishes, the exec plugin removes the `prepare` script (husky, for contributors)
-      # from package.json, so installing the package runs no script.
-      - name: Semantic Release (npm, tag, GitHub Release, major tag)
+      - name: Mint the release bot token
+        id: bot-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+
+      # The git plugin commits package.json with the version first; then the exec plugin removes
+      # the `prepare` script (husky, for contributors) from the copy npm publishes, so installing
+      # the package runs no script.
+      - name: Semantic Release (version commit, npm, tags, GitHub Release)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.bot-token.outputs.token }}
         run: pnpm exec semantic-release
