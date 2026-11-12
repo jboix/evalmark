@@ -2,7 +2,7 @@
  * The geometry of the dashboard's charts: scales, ticks and paths, computed apart from the
  * components so they can be tested.
  */
-import { linearScale, niceTicks, type Scale, timeTicks } from './scale.ts';
+import { linearScale, niceTicks, type Scale } from './scale.ts';
 import type { Series } from './series.ts';
 
 /** The space around a chart's plot, for its axes. */
@@ -11,7 +11,7 @@ export interface Margins {
   readonly top: number;
   /** Right of the plot. */
   readonly right: number;
-  /** Below the plot, for the time axis. */
+  /** Below the plot. */
   readonly bottom: number;
   /** Left of the plot, for the value axis. */
   readonly left: number;
@@ -19,12 +19,10 @@ export interface Margins {
 
 /** A line chart's geometry. */
 export interface LineLayout {
-  /** From time to x. */
+  /** From a run's position to x. */
   readonly x: Scale;
   /** From value to y. */
   readonly y: Scale;
-  /** The time ticks. */
-  readonly xTicks: readonly number[];
   /** The value ticks. */
   readonly yTicks: readonly number[];
   /** Each series' path, as SVG path data, in the series' order. */
@@ -64,7 +62,7 @@ function extentOf(
 }
 
 /**
- * Lays out a line chart: values from zero, time across.
+ * Lays out a line chart: values from zero, the runs across in order, evenly spaced.
  *
  * @param series - The series.
  * @param size - The chart's width and height, in pixels.
@@ -78,24 +76,24 @@ export function lineLayout(
   margins: Margins,
   ceiling = Number.POSITIVE_INFINITY,
 ): LineLayout | undefined {
-  const times = extentOf(series, (point) => point.time);
+  const slots = extentOf(series, (point) => point.slot);
   const values = extentOf(series, (point) => point.value);
-  if (times === undefined || values === undefined) return undefined;
+  if (slots === undefined || values === undefined) return undefined;
   const yTicks = niceTicks(0, Math.max(values[1], Number.EPSILON)).filter(
     (tick) => tick <= ceiling,
   );
   const top = Math.min(Math.max(values[1], yTicks.at(-1) ?? 1), ceiling);
-  const x = linearScale(times, [margins.left, size.width - margins.right]);
+  const x = linearScale(slots, [margins.left, size.width - margins.right]);
   const y = linearScale([0, top], [size.height - margins.bottom, margins.top]);
   const paths = series.map((line) =>
     line.points
       .map(
         (point, index) =>
-          `${index === 0 ? 'M' : 'L'}${round(x(point.time))},${round(y(point.value))}`,
+          `${index === 0 ? 'M' : 'L'}${round(x(point.slot))},${round(y(point.value))}`,
       )
       .join(''),
   );
-  return { x, y, xTicks: timeTicks(times[0], times[1]), yTicks, paths };
+  return { x, y, yTicks, paths };
 }
 
 /**
@@ -108,11 +106,11 @@ function round(value: number): number {
   return Math.round(value * 10) / 10;
 }
 
-/** The point of each series nearest a time, for the hover readout. */
+/** The point of each series at a position, for the hover readout. */
 export interface Readout {
-  /** The time the readout is at: the nearest point's. */
-  readonly time: number;
-  /** One entry per series that has a point near the time. */
+  /** The position the readout is at: the nearest that has a run. */
+  readonly slot: number;
+  /** One entry per series that has a run at the position. */
   readonly entries: readonly {
     readonly series: number;
     readonly point: Series['points'][number];
@@ -120,57 +118,36 @@ export interface Readout {
 }
 
 /**
- * The readout at a time: the nearest point overall, and each series' point within a window of it.
+ * The readout at a position: the nearest position that has a run, and each series' run there.
  *
  * @param series - The series.
- * @param time - The pointer's time.
- * @param window - How far a series' point may be from the nearest one, in milliseconds.
+ * @param position - The pointer's position, which may lie between two runs.
  * @returns The readout, or `undefined` when there are no points.
  */
-export function readoutAt(
-  series: readonly Series[],
-  time: number,
-  window: number,
-): Readout | undefined {
-  const all = series.flatMap((line) => line.points.map((point) => point.time));
-  const nearest = all.reduce<number | undefined>(
+export function readoutAt(series: readonly Series[], position: number): Readout | undefined {
+  const nearest = stopsOf(series).reduce<number | undefined>(
     (best, candidate) =>
-      best === undefined || Math.abs(candidate - time) < Math.abs(best - time) ? candidate : best,
+      best === undefined || Math.abs(candidate - position) < Math.abs(best - position)
+        ? candidate
+        : best,
     undefined,
   );
   if (nearest === undefined) return undefined;
   const entries = series.flatMap((line, index) => {
-    const point = closestPoint(line, nearest);
-    return point !== undefined && Math.abs(point.time - nearest) <= window
-      ? [{ series: index, point }]
-      : [];
+    const point = line.points.find((candidate) => candidate.slot === nearest);
+    return point === undefined ? [] : [{ series: index, point }];
   });
-  return { time: nearest, entries };
+  return { slot: nearest, entries };
 }
 
 /**
- * A series' point nearest a time.
- *
- * @param line - The series.
- * @param time - The time.
- * @returns The point, or `undefined` when the series is empty.
- */
-function closestPoint(line: Series, time: number): Series['points'][number] | undefined {
-  return line.points.reduce<Series['points'][number] | undefined>(
-    (best, point) =>
-      best === undefined || Math.abs(point.time - time) < Math.abs(best.time - time) ? point : best,
-    undefined,
-  );
-}
-
-/**
- * Every distinct time of the series, ascending: the stops of keyboard navigation.
+ * Every position that has a run, ascending: the stops of keyboard navigation.
  *
  * @param series - The series.
- * @returns The times.
+ * @returns The positions.
  */
 export function stopsOf(series: readonly Series[]): number[] {
-  return [...new Set(series.flatMap((line) => line.points.map((point) => point.time)))].sort(
+  return [...new Set(series.flatMap((line) => line.points.map((point) => point.slot)))].sort(
     (first, second) => first - second,
   );
 }
@@ -179,9 +156,9 @@ export function stopsOf(series: readonly Series[]): number[] {
  * Where a key moves the readout.
  *
  * @param key - The key pressed.
- * @param stops - The times the readout can stop at, ascending.
- * @param active - The current time, if any.
- * @returns The new time, `open`, `clear`, or `undefined` for a key the chart ignores.
+ * @param stops - The positions the readout can stop at, ascending.
+ * @param active - The current position, if any.
+ * @returns The new position, `open`, `clear`, or `undefined` for a key the chart ignores.
  */
 export function keyStop(
   key: string,

@@ -156,16 +156,6 @@ export function formatDateTime(iso: string): string {
 }
 
 /**
- * A short date, for an axis or a column.
- *
- * @param time - Milliseconds since the epoch.
- * @returns Such as `Oct 8`.
- */
-export function formatShortDate(time: number): string {
-  return new Date(time).toLocaleDateString('en', { month: 'short', day: 'numeric' });
-}
-
-/**
  * A commit's short form.
  *
  * @param sha - The full SHA.

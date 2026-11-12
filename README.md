@@ -327,6 +327,9 @@ A run has one set of labels, such as `model`. To compare models, run the suite o
 action records each result as its own run. The dashboard draws one trend line per model and compares
 them case by case, with cost against pass rate.
 
+The trend spaces the runs evenly, in the order they started, so a long pause between two runs takes
+no room. The jobs of one workflow run share a position, and the readout says when a run started.
+
 ```yaml
 strategy:
   matrix:

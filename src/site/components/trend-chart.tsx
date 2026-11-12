@@ -1,6 +1,6 @@
 /**
- * A trend: one line per series over time, with a crosshair readout that follows the pointer or the
- * arrow keys, and opens the run under it.
+ * A trend: one line per series over the runs in order, evenly spaced, with a crosshair readout
+ * that follows the pointer or the arrow keys, says when the run started, and opens it.
  */
 import { useState } from 'preact/hooks';
 import { useWidth } from '../hooks/use-width.ts';
@@ -13,18 +13,15 @@ import {
   slotOf,
   stopsOf,
 } from '../lib/chart.ts';
-import { formatDateTime, formatShortDate } from '../lib/format.ts';
+import { formatDateTime } from '../lib/format.ts';
 import { links } from '../lib/route.ts';
 import type { Series } from '../lib/series.ts';
 
 /** The chart's height, in pixels. */
 const height = 160;
 
-/** The space around the plot. */
-const margins = { top: 10, right: 12, bottom: 24, left: 48 };
-
-/** How far apart two runs may start and still share a readout: one workflow's matrix. */
-const readoutWindow = 6 * 3_600_000;
+/** The space around the plot. The runs' axis has no labels: the readout says the date. */
+const margins = { top: 10, right: 12, bottom: 10, left: 48 };
 
 /** What the trend chart draws. */
 interface TrendProps {
@@ -90,9 +87,9 @@ export function TrendChart(props: TrendProps) {
 function usePlotCursor(props: TrendProps, width: number) {
   const [active, setActive] = useState<number | undefined>(undefined);
   const stops = stopsOf(props.series);
-  const readout = active === undefined ? undefined : readoutAt(props.series, active, readoutWindow);
+  const readout = active === undefined ? undefined : readoutAt(props.series, active);
   const [first, last] = [stops[0] ?? 0, stops.at(-1) ?? 0];
-  const timeAt = (x: number) =>
+  const positionAt = (x: number) =>
     first +
     ((x - margins.left) / Math.max(1, width - margins.left - margins.right)) * (last - first);
   const onKeyDown = (event: KeyboardEvent) => {
@@ -105,7 +102,7 @@ function usePlotCursor(props: TrendProps, width: number) {
   const plotProps = {
     ...sliderAttributes(props, stops, readout),
     onKeyDown,
-    onPointerMove: (event: PointerEvent) => setActive(timeAt(event.offsetX)),
+    onPointerMove: (event: PointerEvent) => setActive(positionAt(event.offsetX)),
     onPointerLeave: () => setActive(undefined),
     onClick: () => openRun(readout),
   };
@@ -113,10 +110,10 @@ function usePlotCursor(props: TrendProps, width: number) {
 }
 
 /**
- * The plot's slider semantics: it moves over the runs, one stop per start time.
+ * The plot's slider semantics: it moves over the runs, one stop per position.
  *
  * @param props - The chart's props.
- * @param stops - The start times, ascending.
+ * @param stops - The positions that have a run, ascending.
  * @param readout - The readout at the cursor, if any.
  * @returns The attributes.
  */
@@ -131,7 +128,7 @@ function sliderAttributes(
     'aria-label': `${props.label}. Use the arrow keys to read each run, Enter to open it.`,
     'aria-valuemin': 0,
     'aria-valuemax': Math.max(0, stops.length - 1),
-    'aria-valuenow': readout === undefined ? 0 : stops.indexOf(readout.time),
+    'aria-valuenow': readout === undefined ? 0 : stops.indexOf(readout.slot),
     'aria-valuetext': readoutText(readout, props.series, props.format),
   };
 }
@@ -168,7 +165,7 @@ function openRun(readout: Readout | undefined): void {
 }
 
 /**
- * The grid and the axes' labels.
+ * The grid and the value axis' labels.
  *
  * @param props - The layout, the chart's width and how to write values.
  * @returns The axes.
@@ -180,7 +177,6 @@ function Axes(props: {
 }) {
   const { layout } = props;
   const right = props.width - margins.right;
-  const bottom = height - margins.bottom;
   return (
     <g class="axes">
       {layout.yTicks.map((tick) => (
@@ -196,11 +192,6 @@ function Axes(props: {
             {props.format(tick)}
           </text>
         </g>
-      ))}
-      {layout.xTicks.map((tick) => (
-        <text key={`x${tick}`} class="tick" x={layout.x(tick)} y={bottom + 18} text-anchor="middle">
-          {formatShortDate(tick)}
-        </text>
       ))}
     </g>
   );
@@ -228,7 +219,7 @@ function Lines(props: {
               <circle
                 key={point.run.id}
                 class={`point fill-series-${slot}`}
-                cx={props.layout.x(point.time)}
+                cx={props.layout.x(point.slot)}
                 cy={props.layout.y(point.value)}
                 r={2.5}
               />
@@ -252,7 +243,7 @@ function Cursor(props: {
   readonly series: readonly Series[];
   readonly names: readonly string[];
 }) {
-  const x = props.layout.x(props.readout.time);
+  const x = props.layout.x(props.readout.slot);
   return (
     <g>
       <line class="crosshair" x1={x} x2={x} y1={margins.top} y2={height - margins.bottom} />
@@ -260,7 +251,7 @@ function Cursor(props: {
         <circle
           key={entry.point.run.id}
           class={`dot-active fill-series-${slotOf(props.series[entry.series]?.name ?? '', props.names)}`}
-          cx={props.layout.x(entry.point.time)}
+          cx={props.layout.x(entry.point.slot)}
           cy={props.layout.y(entry.point.value)}
           r={4}
         />
@@ -283,7 +274,7 @@ function ReadoutBox(props: {
   readonly names: readonly string[];
   readonly format: (value: number) => string;
 }) {
-  const x = props.layout.x(props.readout.time);
+  const x = props.layout.x(props.readout.slot);
   const flip = x > props.width / 2;
   const first = props.readout.entries[0]?.point.run;
   return (

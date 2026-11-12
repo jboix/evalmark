@@ -49,6 +49,88 @@ describe('seriesOf', () => {
   });
 });
 
+describe('the positions of the runs', () => {
+  /**
+   * A passing run of a model, from a workflow run.
+   *
+   * @param id - Its id.
+   * @param startedAt - Its start time.
+   * @param model - Its model.
+   * @param workflow - The number of the workflow run it came from, if it says.
+   * @returns The summary.
+   */
+  function job(id: string, startedAt: string, model: string, workflow?: number) {
+    const run = summary({ id, startedAt, labels: { model }, cases: { q: 'P' } });
+    if (workflow === undefined) return run;
+    return { ...run, source: { runUrl: `https://github.com/o/r/actions/runs/${workflow}` } };
+  }
+
+  /**
+   * Each run's position, by id.
+   *
+   * @param series - The series.
+   * @returns The positions.
+   */
+  function slots(series: ReturnType<typeof seriesOf>): Record<string, number> {
+    return Object.fromEntries(
+      series.flatMap((line) => line.points.map((point) => [point.run.id, point.slot])),
+    );
+  }
+
+  test('follow the order the runs started in, one step apart whatever the gap', () => {
+    const series = seriesOf(
+      [
+        job('late', '2026-11-12T10:00:00Z', 'a'),
+        job('first', '2026-10-01T10:00:00Z', 'a'),
+        job('second', '2026-10-01T11:00:00Z', 'a'),
+      ],
+      'passRate',
+    );
+    expect(slots(series)).toEqual({ first: 0, second: 1, late: 2 });
+  });
+
+  test('are shared by the jobs of one workflow run, one per series', () => {
+    const series = seriesOf(
+      [
+        job('a1', '2026-10-01T10:00:00Z', 'a', 1),
+        job('b1', '2026-10-01T10:00:09Z', 'b', 1),
+        job('a2', '2026-10-01T10:30:00Z', 'a', 2),
+        job('b2', '2026-10-01T10:30:07Z', 'b', 2),
+      ],
+      'passRate',
+      'model',
+    );
+    expect(slots(series)).toEqual({ a1: 0, b1: 0, a2: 1, b2: 1 });
+  });
+
+  test('are not shared by two runs of one series, nor by two workflow runs', () => {
+    const unsplit = seriesOf(
+      [job('a1', '2026-10-01T10:00:00Z', 'a', 1), job('b1', '2026-10-01T10:00:09Z', 'b', 1)],
+      'passRate',
+    );
+    expect(slots(unsplit)).toEqual({ a1: 0, b1: 1 });
+    const apart = seriesOf(
+      [job('b1', '2026-10-01T10:00:00Z', 'b', 1), job('a2', '2026-10-01T10:30:00Z', 'a', 2)],
+      'passRate',
+      'model',
+    );
+    expect(slots(apart)).toEqual({ b1: 0, a2: 1 });
+  });
+
+  test('are shared by runs that name no workflow and started within hours', () => {
+    const series = seriesOf(
+      [
+        job('a1', '2026-10-01T10:00:00Z', 'a'),
+        job('b1', '2026-10-01T12:00:00Z', 'b'),
+        job('b2', '2026-10-02T12:00:00Z', 'b'),
+      ],
+      'passRate',
+      'model',
+    );
+    expect(slots(series)).toEqual({ a1: 0, b1: 0, b2: 1 });
+  });
+});
+
 describe('trendOf', () => {
   test('defaults to the pass rate, one line per value of the split key', () => {
     const trend = trendOf({}, runs, runs, 'model');

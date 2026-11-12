@@ -64,26 +64,3 @@ export function niceTicks(low: number, high: number, count = 4): number[] {
   }
   return ticks;
 }
-
-/** One day, in milliseconds. */
-const day = 86_400_000;
-
-/** Steps between time ticks, in days. */
-const daySteps = [1, 2, 7, 14, 28, 56, 91, 182, 365];
-
-/**
- * Ticks for a time axis, at midnight UTC every one, two, seven or more days.
- *
- * @param start - The first time, in milliseconds since the epoch.
- * @param end - The last time.
- * @param count - About how many ticks to have.
- * @returns The ticks inside `[start, end]`, ascending.
- */
-export function timeTicks(start: number, end: number, count = 5): number[] {
-  if (!(end > start)) return Number.isFinite(start) ? [start] : [];
-  const days = (end - start) / day;
-  const step = (daySteps.find((candidate) => days / candidate <= count) ?? 365) * day;
-  const ticks: number[] = [];
-  for (let tick = Math.ceil(start / step) * step; tick <= end; tick += step) ticks.push(tick);
-  return ticks;
-}

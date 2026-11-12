@@ -8,7 +8,7 @@ import {
   spreadLabels,
   stopsOf,
 } from '../../src/site/lib/chart.ts';
-import { linearScale, niceTicks, timeTicks } from '../../src/site/lib/scale.ts';
+import { linearScale, niceTicks } from '../../src/site/lib/scale.ts';
 import { seriesOf } from '../../src/site/lib/series.ts';
 import { summary } from './summaries.ts';
 
@@ -26,17 +26,6 @@ describe('scales', () => {
     expect(niceTicks(0, 640_700, 4)).toEqual([0, 200_000, 400_000, 600_000, 800_000]);
     expect(niceTicks(0, 0)).toEqual([0, 1]);
     expect(niceTicks(Number.NaN, 1)).toEqual([]);
-  });
-
-  test('put time ticks at midnight, inside the range', () => {
-    const start = Date.parse('2026-09-01T10:00:00Z');
-    const end = Date.parse('2026-09-05T10:00:00Z');
-    const ticks = timeTicks(start, end);
-    expect(ticks.every((tick) => tick >= start && tick <= end && tick % 86_400_000 === 0)).toBe(
-      true,
-    );
-    expect(ticks.length).toBeGreaterThanOrEqual(2);
-    expect(timeTicks(start, start)).toEqual([start]);
   });
 });
 
@@ -71,14 +60,34 @@ describe('the line chart', () => {
     expect(lineLayout([], { width: 1, height: 1 }, margins)).toBeUndefined();
   });
 
-  test('reads every series near the nearest point', () => {
-    const readout = readoutAt(series, Date.parse('2026-10-01T01:00:00Z'), 60_000);
-    expect(readout?.entries.map((entry) => entry.point.run.id)).toEqual(['a', 'c']);
+  test('spaces the runs evenly, whatever the time between them', () => {
+    const spaced = seriesOf(
+      ['2026-01-01', '2026-01-02', '2026-06-01'].map((date, index) =>
+        summary({ id: `r${index}`, startedAt: `${date}T00:00:00Z`, cases: { q: 'P' } }),
+      ),
+      'passRate',
+    );
+    const layout = lineLayout(spaced, { width: 110, height: 110 }, margins, 1);
+    expect(layout?.paths[0]).toBe('M10,10L55,10L100,10');
   });
 
-  test('steps through the runs with the keyboard', () => {
-    const stops = stopsOf(series);
-    expect(stops).toHaveLength(3);
+  test('reads every series at the nearest position', () => {
+    const readout = readoutAt(series, 0.4);
+    expect(readout?.slot).toBe(0);
+    expect(readout?.entries.map((entry) => entry.point.run.id)).toEqual(['a', 'c']);
+    expect(readoutAt(series, 0.6)?.entries.map((entry) => entry.point.run.id)).toEqual(['b']);
+    expect(readoutAt([], 0)).toBeUndefined();
+  });
+
+  test('steps through the positions with the keyboard', () => {
+    const stops = stopsOf(
+      seriesOf(
+        [...runs, summary({ id: 'd', startedAt: '2026-10-03T00:00:00Z', cases: { q: 'P' } })],
+        'passRate',
+        'model',
+      ),
+    );
+    expect(stops).toEqual([0, 1, 2]);
     expect(keyStop('ArrowRight', stops, undefined)).toBe(stops[0]);
     expect(keyStop('ArrowLeft', stops, undefined)).toBe(stops[2]);
     expect(keyStop('ArrowRight', stops, stops[2])).toBe(stops[2]);

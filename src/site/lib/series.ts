@@ -1,5 +1,6 @@
 /**
- * Trend series: one metric of the runs over time, one line per label value.
+ * Trend series: one metric of the runs in the order they started, one line per label value. Runs
+ * are spaced evenly, whatever the time between them.
  */
 import type { RunSummary, Totals } from '../../format/store.ts';
 import type { Query } from './route.ts';
@@ -23,8 +24,8 @@ export const metricNames: Readonly<Record<Metric, string>> = {
 export interface SeriesPoint {
   /** The run. */
   readonly run: RunSummary;
-  /** When it started, in milliseconds since the epoch. */
-  readonly time: number;
+  /** Its position across the chart, from 0: runs of one workflow share one. */
+  readonly slot: number;
   /** The metric's value. */
   readonly value: number;
 }
@@ -61,6 +62,55 @@ export function isMetric(value: string | undefined): value is Metric {
   return metrics.some((metric) => metric === value);
 }
 
+/** How far apart two runs without a workflow address may start and still share a position. */
+const matrixWindow = 6 * 3_600_000;
+
+/** A run with a value, before it has a position. */
+interface Entry {
+  /** The run. */
+  readonly run: RunSummary;
+  /** The series it belongs to. */
+  readonly name: string;
+  /** The metric's value. */
+  readonly value: number;
+}
+
+/**
+ * Whether two runs belong together: the jobs of one workflow run, or, for runs that do not say
+ * which workflow they came from, runs that started within a few hours.
+ *
+ * @param first - One run.
+ * @param second - The other.
+ * @returns `true` when they may share a position.
+ */
+function together(first: RunSummary, second: RunSummary): boolean {
+  const [one, other] = [first.source.runUrl, second.source.runUrl];
+  if (one !== undefined && other !== undefined) return one === other;
+  return Math.abs(Date.parse(first.startedAt) - Date.parse(second.startedAt)) <= matrixWindow;
+}
+
+/**
+ * Gives each run its position: one after the other in the order given, runs that belong together
+ * sharing one as long as each is of another series.
+ *
+ * @param entries - The runs, oldest first.
+ * @returns The series' names and their points, in the same order.
+ */
+function placed(entries: readonly Entry[]): { name: string; point: SeriesPoint }[] {
+  let slot = -1;
+  let lead: RunSummary | undefined;
+  let taken = new Set<string>();
+  return entries.map(({ run, name, value }) => {
+    if (lead === undefined || taken.has(name) || !together(lead, run)) {
+      slot += 1;
+      lead = run;
+      taken = new Set();
+    }
+    taken.add(name);
+    return { name, point: { run, slot, value } };
+  });
+}
+
 /**
  * The trend of a metric: one series per value of the split key, or one series of every run.
  *
@@ -70,20 +120,19 @@ export function isMetric(value: string | undefined): value is Metric {
  * @returns The series, sorted by name, each oldest first.
  */
 export function seriesOf(runs: readonly RunSummary[], metric: Metric, splitKey?: string): Series[] {
+  const entries = [...runs]
+    .sort((first, second) => Date.parse(first.startedAt) - Date.parse(second.startedAt))
+    .flatMap((run): Entry[] => {
+      const value = metricValue(run.totals, metric);
+      const name = splitKey === undefined ? 'all' : (run.labels[splitKey] ?? 'none');
+      return value === null ? [] : [{ run, name, value }];
+    });
   const groups = new Map<string, SeriesPoint[]>();
-  for (const run of runs) {
-    const value = metricValue(run.totals, metric);
-    if (value === null) continue;
-    const name = splitKey === undefined ? 'all' : (run.labels[splitKey] ?? 'none');
-    const points = groups.get(name) ?? [];
-    points.push({ run, time: Date.parse(run.startedAt), value });
-    groups.set(name, points);
+  for (const { name, point } of placed(entries)) {
+    groups.set(name, [...(groups.get(name) ?? []), point]);
   }
   return [...groups]
-    .map(([name, points]) => ({
-      name,
-      points: points.sort((first, second) => first.time - second.time),
-    }))
+    .map(([name, points]) => ({ name, points }))
     .sort((first, second) => first.name.localeCompare(second.name));
 }
 
