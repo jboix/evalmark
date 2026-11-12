@@ -53,6 +53,8 @@
     "knip": "knip",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
+    "test:node": "vitest run --project node",
+    "test:browser": "vitest run --project chromium --project firefox --project webkit",
     "verify": "pnpm run lint && pnpm run docs:check && pnpm run arch && pnpm run knip && pnpm run typecheck && pnpm run test && pnpm run check:dist",
     "prepare": "husky"
   },
@@ -73,9 +75,12 @@
     "@semantic-release/exec": "^7.1.0",
     "@semantic-release/git": "^11.0.1",
     "@types/node": "^24.19.1",
+    "@vitest/browser-playwright": "^5.1.0",
+    "axe-core": "^4.14.0",
     "dependency-cruiser": "^18.5.0",
     "husky": "^9.1.7",
     "knip": "^6.39.0",
+    "playwright": "^1.65.0",
     "preact": "^11.0.0",
     "remark-cli": "^12.0.1",
     "remark-gfm": "^4.0.1",
@@ -84,7 +89,7 @@
     "tsdown": "^0.23.0",
     "typescript": "~6.0.3",
     "vite": "^8.3.3",
-    "vitest": "^5.0.3",
+    "vitest": "^5.1.0",
     "yaml": "^2.9.1",
     "zod": "^4.6.5"
   }

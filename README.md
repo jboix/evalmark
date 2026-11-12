@@ -425,6 +425,13 @@ Each release is a tag, cut by semantic-release from the commit messages once the
 
 The [releases](https://github.com/jboix/evalmark/releases) list what changed in each.
 
+## Accessibility
+
+The dashboard aims to meet WCAG 2.2 at level AA. axe-core checks every view in Chromium, Firefox and
+WebKit, and browser tests drive the keyboard. Nobody has audited it by hand.
+[Accessibility](docs/ACCESSIBILITY.md) says what is checked, what the dashboard does and what is
+not covered yet.
+
 ## Contributing
 
 [The contributing guide](docs/CONTRIBUTING.md) has the setup, the layout and how releases work.

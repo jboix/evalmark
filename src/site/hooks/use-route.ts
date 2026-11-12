@@ -13,6 +13,8 @@ export function useRoute(): { route: Route; hash: string } {
   const [hash, setHash] = useState(() => location.hash);
   useEffect(() => {
     const update = () => setHash(location.hash);
+    // A hash that changed between the first render and this effect has no event left to hear.
+    update();
     addEventListener('hashchange', update);
     return () => removeEventListener('hashchange', update);
   }, []);

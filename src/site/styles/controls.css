@@ -55,8 +55,10 @@
   border-color: var(--ink-3);
 }
 
+/* A date field's parts take the focus one by one: the ring stays around the whole field. */
 .select:focus-visible,
-.input:focus-visible {
+.input:focus-visible,
+.input[type="date"]:focus-within {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
   border-color: var(--accent);

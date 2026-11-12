@@ -89,15 +89,29 @@ a.status-word {
   list-style: none;
 }
 
-.strip {
-  gap: 1px;
-}
-
+/* A mark that is a link is a target 24 pixels wide and high, the least a pointer needs. */
 .strip-link,
 .mark-link {
   display: inline-flex;
-  padding: 6px 2px;
-  border-radius: 3px;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+/* The first mark stays under its column's title: the target's room around it goes in the gutter. */
+.strip {
+  margin-left: -7px;
+}
+
+/* A long history folds onto more lines: the table never grows wider than the page for it. */
+.strip {
+  flex-wrap: wrap;
+}
+
+.mark-link {
+  margin-left: -6px;
 }
 
 .strip-link:hover,

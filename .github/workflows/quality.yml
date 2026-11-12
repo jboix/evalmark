@@ -53,6 +53,9 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
+      - name: Install the browsers the dashboard's tests run in
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
       - name: Test
         run: pnpm run test
 

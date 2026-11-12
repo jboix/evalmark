@@ -65,7 +65,7 @@
     --fail-text: #ff9b68;
     --flaky: #e4be4a;
     --error: #a98bff;
-    --skip: #74747e;
+    --skip: #787882;
     --s1: #4fd1c1;
     --s2: #a98bff;
     --s3: #e9a23b;
@@ -90,7 +90,7 @@
   --fail-text: #ff9b68;
   --flaky: #e4be4a;
   --error: #a98bff;
-  --skip: #74747e;
+  --skip: #787882;
   --s1: #4fd1c1;
   --s2: #a98bff;
   --s3: #e9a23b;
@@ -123,6 +123,13 @@ a {
 }
 
 a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* A link inside a sentence is underlined: its colour alone does not tell it from the text. */
+.footer a,
+.not-found a {
   text-decoration: underline;
   text-underline-offset: 3px;
 }

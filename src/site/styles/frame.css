@@ -204,6 +204,11 @@
   .topbar-inner {
     gap: 0 18px;
   }
+
+  /* A table that sits on the page, not in a panel, runs to the page's edges and no further. */
+  .main > .table-box {
+    margin: 0 -16px;
+  }
 }
 
 /* Panels: the summary, the trend and each table sit on the surface, so the page has a structure

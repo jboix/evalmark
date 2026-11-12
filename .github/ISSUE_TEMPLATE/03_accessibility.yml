@@ -1,0 +1,29 @@
+name: ♿ Accessibility barrier
+description: Something in the dashboard you cannot see, reach, read or use
+title: "♿ <TITLE>"
+labels: ["accessibility"]
+body:
+  - type: textarea
+    id: barrier
+    attributes:
+      label: What stopped you?
+      description: >
+        What you tried to do, on which view (its address after the #), and
+        what got in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: >
+        The evalmark version or commit your workflow uses, the device with its
+        OS version, the browser, and any assistive technology (screen reader,
+        zoom, keyboard only, switch control, voice control) with its version.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What would work for you?
+      description: Optional. How you expected it to work, or what would help.

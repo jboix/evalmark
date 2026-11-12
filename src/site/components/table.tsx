@@ -3,6 +3,7 @@
  */
 import type { ComponentChildren } from 'preact';
 import { replaceRoute } from '../hooks/use-route.ts';
+import { useScrolls } from '../hooks/use-scrolls.ts';
 import { withQuery } from '../lib/route.ts';
 import { nextSort, type SortState } from '../lib/sort.ts';
 import { MarkLegend } from './status.tsx';
@@ -47,7 +48,8 @@ export function SortHeader(props: {
 
 /**
  * The box a table scrolls in when it is wider than the page, so the page itself never scrolls
- * sideways. Browsers let the keyboard focus a box that scrolls.
+ * sideways. While it scrolls, the keyboard can focus it and scroll it with the arrow keys, and it
+ * has a name.
  *
  * @param props - The table, and whether the legend of the status marks follows it.
  * @returns The box.
@@ -56,9 +58,17 @@ export function TableBox(props: {
   readonly children: ComponentChildren;
   readonly legend?: boolean;
 }) {
+  const [box, scrolls] = useScrolls<HTMLElement>();
   return (
     <>
-      <div class="table-box">{props.children}</div>
+      <section
+        ref={box}
+        class="table-box"
+        aria-label={scrolls ? 'Table, scrolls sideways' : undefined}
+        tabIndex={scrolls ? 0 : undefined}
+      >
+        {props.children}
+      </section>
       {props.legend === true ? <MarkLegend /> : null}
     </>
   );

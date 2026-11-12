@@ -22,7 +22,9 @@ pnpm run docs:format  # remark: format the Markdown
 pnpm run arch         # dependency-cruiser boundary rules
 pnpm run knip         # unused files, exports and dependencies
 pnpm run typecheck    # tsc
-pnpm run test         # unit and end-to-end tests (Vitest, on Node)
+pnpm run test         # every test: on Node, and the dashboard in Chromium, Firefox and WebKit
+pnpm run test:node    # unit and end-to-end tests (Vitest, on Node)
+pnpm run test:browser # the dashboard in the browsers: axe-core and the keyboard (test/browser/)
 pnpm run build        # tsdown: the action, the CLI, the library; Vite: the dashboard; into dist/
 pnpm run check:dist   # build, and fail when dist/ differs from what is committed
 pnpm run schema       # write schema/result.v<version>.json from the result format
@@ -42,6 +44,9 @@ pnpm run evalmark …   # the CLI from its sources: record, import, preview, dem
 - Everything runs on Node 24: `node:` modules, never `Bun`. Scripts and the CLI run from
   their sources with `node`, which strips types: erasable syntax only (`erasableSyntaxOnly`).
 - `src/site/` imports only types from the zod schemas, so the bundle ships without zod.
+- The dashboard keeps what [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) says. A new view or
+  state goes into `test/browser/dashboard.tsx`, so axe-core checks it. Never skip a rule or an
+  element to pass: fix the dashboard, and update the document when what it does changes.
 - `dist/` is committed and always matches the sources. Run `pnpm run build` before committing a
   change to `src/`.
 - The package installs nothing: every dependency is a dev dependency, bundled into `dist/`.

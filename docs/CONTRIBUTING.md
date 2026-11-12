@@ -9,6 +9,7 @@ Node 24 (`.nvmrc`) and pnpm (`corepack enable`).
 
 ```sh
 pnpm install
+pnpm exec playwright install chromium firefox webkit  # the browsers the dashboard's tests run in
 pnpm run verify    # everything CI checks: lint, docs, boundaries, knip, types, tests, dist
 pnpm run demo      # a synthetic history on http://127.0.0.1:4400
 pnpm run site:dev  # the dashboard on a fixture, reloading on each change
@@ -19,19 +20,28 @@ commit `dist/` with any change to `src/`.
 
 ## Layout
 
-| Path           | What it is                                                       |
-| -------------- | ---------------------------------------------------------------- |
-| `src/format/`  | The result format and the stored format: the contract.           |
-| `src/action/`  | The GitHub Action, bundled into `dist/index.js`.                 |
-| `src/import/`  | Importers for promptfoo, Inspect AI and JUnit XML.               |
-| `src/site/`    | The dashboard, a static Preact app, built into `dist/site/`.     |
-| `src/cli/`     | The `evalmark` CLI, bundled into `dist/cli.js`.                  |
-| `src/index.ts` | The npm package's entry: the result format's types.              |
-| `schema/`      | The result format's JSON Schema, one file per version.           |
-| `test/`        | Fixtures, and the action end to end against a local bare remote. |
+| Path            | What it is                                                                |
+| --------------- | ------------------------------------------------------------------------- |
+| `src/format/`   | The result format and the stored format: the contract.                    |
+| `src/action/`   | The GitHub Action, bundled into `dist/index.js`.                          |
+| `src/import/`   | Importers for promptfoo, Inspect AI and JUnit XML.                        |
+| `src/site/`     | The dashboard, a static Preact app, built into `dist/site/`.              |
+| `src/cli/`      | The `evalmark` CLI, bundled into `dist/cli.js`.                           |
+| `src/index.ts`  | The npm package's entry: the result format's types.                       |
+| `schema/`       | The result format's JSON Schema, one file per version.                    |
+| `test/`         | Fixtures, and the action end to end against a local bare remote.          |
+| `test/browser/` | The dashboard in Chromium, Firefox and WebKit: axe-core and the keyboard. |
 
 `.dependency-cruiser.cjs` keeps the boundaries: `format/` imports nothing, the dashboard imports
 only `format/` (types only from the zod schemas), and no code uses `Bun`.
+
+## Changing the dashboard
+
+[Accessibility](ACCESSIBILITY.md) says what the dashboard aims for and how it is checked. The tests
+in `test/browser/` run axe-core on every view and drive the keyboard.
+
+- Add a new view or state to `test/browser/dashboard.tsx`, so axe-core checks it.
+- Update the document when what the dashboard does changes.
 
 ## Changing the result format
 
