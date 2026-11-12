@@ -1,8 +1,46 @@
-node_modules/
-coverage/
+# dependencies (pnpm install)
+node_modules
+
+# dist/ is committed on purpose: GitHub runs the action from it and npm publishes it.
+# pnpm run check:dist fails when it differs from the sources.
+
+# output
+# the demo's history and site (pnpm run demo)
 .demo/
-*.log
-.DS_Store
-.idea/
+# the folder the GitHub Pages workflow deploys (evalmark demo --dir page)
 page/
+*.tgz
+
+# code coverage
+coverage
+*.lcov
+
+# logs
+logs
+*.log
+
+# dotenv environment variable files
+.env
+.env.*
+!.env.example
+
+# secrets
+*.pem
+
+# caches
+.cache
+*.tsbuildinfo
+
+# IntelliJ based IDEs
+.idea
+
+# VisualStudioCode
+.vscode
+.vscode-test
+.history
+
+# Vim swap files
 *.swp
+
+# Finder (MacOS) folder config
+.DS_Store
