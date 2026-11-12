@@ -22,3 +22,8 @@ updates:
       development:
         dependency-type: development
         update-types: [minor, patch]
+    ignore:
+      # @types/node follows the Node version in .nvmrc, which is the one the action runs on
+      # (`using: node24`). Move it by hand when the runtime moves.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
