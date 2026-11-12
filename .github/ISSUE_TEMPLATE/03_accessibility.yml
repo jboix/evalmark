@@ -1,7 +1,7 @@
 name: ♿ Accessibility barrier
 description: Something in the dashboard you cannot see, reach, read or use
-title: "♿ <TITLE>"
-labels: ["accessibility"]
+title: '♿ <TITLE>'
+labels: ['accessibility']
 body:
   - type: textarea
     id: barrier

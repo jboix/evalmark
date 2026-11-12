@@ -1,4 +1,7 @@
-//#region src/format/result-types.d.ts
+/**
+ * The `evalmark` package's library entry: the result format's types, for a TypeScript harness
+ * that writes result files (`import type { Result } from 'evalmark'`), and the format's version.
+ */
 /**
  * The result format's types, declared without the schema library: the package's public types for
  * a TypeScript harness. `result.ts` validates against a zod schema of the same shape, and a test
@@ -132,5 +135,4 @@ interface Result {
   /** The cases that ran. */
   cases: Case[];
 }
-//#endregion
 export type { Attachment, Case, CheckDefinition, CheckResult, Message, Result, ToolCall, Trial, TrialStatus, Usage };

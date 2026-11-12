@@ -166,15 +166,15 @@ export function keyStop(
   active: number | undefined,
 ): number | 'open' | 'clear' | undefined {
   const index = active === undefined ? -1 : stops.indexOf(active);
-  const moves: Readonly<Record<string, () => number | 'open' | 'clear' | undefined>> = {
-    Enter: () => 'open',
-    Escape: () => 'clear',
-    Home: () => stops[0],
-    End: () => stops.at(-1),
-    ArrowRight: () => stops[Math.min(stops.length - 1, index + 1)],
-    ArrowLeft: () => stops[index === -1 ? stops.length - 1 : Math.max(0, index - 1)],
-  };
-  return moves[key]?.();
+  const moves = new Map<string, number | 'open' | 'clear' | undefined>([
+    ['Enter', 'open'],
+    ['Escape', 'clear'],
+    ['Home', stops[0]],
+    ['End', stops.at(-1)],
+    ['ArrowRight', stops[Math.min(stops.length - 1, index + 1)]],
+    ['ArrowLeft', stops[index === -1 ? stops.length - 1 : Math.max(0, index - 1)]],
+  ]);
+  return moves.get(key);
 }
 
 /**
