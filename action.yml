@@ -13,7 +13,7 @@ inputs:
     description: "The result file's format: `auto` detects it; `evalmark`, `promptfoo`, `inspect` (Inspect AI) or `junit` (JUnit XML). A file with several models records one run per model."
     default: auto
   mode:
-    description: "`record` stores the run and publishes the site; `export` copies the stored site and data into `path`, for a site deployed from Actions."
+    description: '`record` stores the run and publishes the site; `export` copies the stored site and data into `path`, for a site deployed from Actions.'
     default: record
   branch:
     description: The branch the data and the site live on, or a full ref such as `refs/evalmark/data`, which a normal clone does not fetch.
@@ -37,13 +37,13 @@ inputs:
     description: How many days of runs to keep. `0` keeps every day.
     default: '0'
   transcripts:
-    description: "Which transcripts to keep: `failed` (trials that did not pass), `all`, or `none`."
+    description: 'Which transcripts to keep: `failed` (trials that did not pass), `all`, or `none`.'
     default: failed
   keep-transcripts:
     description: How many of the newest runs keep their transcripts. `0` keeps them on every run.
     default: '30'
   attachments:
-    description: "Which trials keep their attachment files, such as screenshots: `failed` (trials that did not pass), `all`, or `none`. A trial that does not keep them still records their type, caption and size."
+    description: 'Which trials keep their attachment files, such as screenshots: `failed` (trials that did not pass), `all`, or `none`. A trial that does not keep them still records their type, caption and size.'
     default: failed
   keep-attachments:
     description: How many of the newest runs keep their attachment files. `0` keeps them on every run.

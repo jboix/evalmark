@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { copyFile, cp, mkdir, mkdtemp, readFile, readdir, realpath, rm, stat, writeFile } from "node:fs/promises";
+import { copyFile, cp, mkdir, mkdtemp, readFile, readdir, realpath, rm, stat as stat$1, writeFile } from "node:fs/promises";
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { createHash, randomBytes } from "node:crypto";
 import { deflateSync, gunzipSync, gzipSync, inflateRawSync, zstdDecompressSync } from "node:zlib";
@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { createServer } from "node:http";
 import { pipeline } from "node:stream";
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/util.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/util.js
 function getEnumValues(entries) {
 	const numericValues = Object.values(entries).filter((v) => typeof v === "number");
 	return Object.entries(entries).filter(([k, _]) => numericValues.indexOf(+k) === -1).map(([_, v]) => v);
@@ -317,6 +317,17 @@ function prefixIssues(path, issues) {
 function unwrapMessage(message) {
 	return typeof message === "string" ? message : message?.message;
 }
+/** The leading size checks of `defChecks` that set an upper bound, each paired with it. */
+function sizeCaps(defChecks) {
+	const caps = [];
+	for (const ch of defChecks ?? []) {
+		const d = ch._zod.def;
+		if (!/_(length|size)$|_equals$/.test(d.check)) break;
+		const max = d.maximum ?? d.length ?? d.size;
+		if (max >= 0) caps.push([max, ch]);
+	}
+	return caps;
+}
 function attachSchema(issues, start, inst) {
 	var _a;
 	for (let i = start; i < issues.length; i++) (_a = issues[i]).schema ?? (_a.schema = inst);
@@ -409,6 +420,7 @@ function hide(inst, key, value) {
 	return own(inst, key, value, false);
 }
 /** Adds members a table derives from the instance: each builds on first read and shadows as own data, and assignment shadows the same way, as when these were own properties. */
+/* @__NO_SIDE_EFFECTS__ */
 function derived(computes, table) {
 	for (const key in computes) {
 		const compute = computes[key];
@@ -532,8 +544,7 @@ function constantCatch(value) {
 	fn[CONSTANT_CATCH] = true;
 	return fn;
 }
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/core.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/core.js
 var _a$1;
 const _zodDesc = {
 	value: void 0,
@@ -560,6 +571,7 @@ function newError(Definition) {
 	}
 	return new Definition();
 }
+/* @__NO_SIDE_EFFECTS__ */
 function $constructor(name, initializer, proto, params) {
 	const zodProto = {};
 	function Internals(def) {
@@ -638,8 +650,7 @@ function config(newConfig) {
 	if (newConfig) Object.assign(globalConfig, newConfig);
 	return globalConfig;
 }
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/errors.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/errors.js
 function _getMessage() {
 	const internals = this._zod;
 	internals.message ?? (internals.message = JSON.stringify(internals.def, jsonStringifyReplacer, 2));
@@ -690,8 +701,7 @@ const initializer$1 = (inst, def) => {
 		});
 	}
 };
-const $ZodError = $constructor("$ZodError", initializer$1);
-$constructor("$ZodError", initializer$1, void 0, { Parent: Error });
+const $ZodError = /* @__PURE__ */ $constructor("$ZodError", initializer$1);
 /** Get-or-create `obj[key]` as an own data property. A path segment naming an inherited member
 * ("toString", "constructor") would otherwise read through to the prototype, and assigning
 * "__proto__" would hit the setter instead of creating a key. */
@@ -754,8 +764,7 @@ function formatError(error, mapper = (issue) => issue.message) {
 	processError(error);
 	return fieldErrors;
 }
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/parse.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/parse.js
 function finalizeParams(callee, params) {
 	return {
 		callee: params?.callee ?? callee,
@@ -957,8 +966,7 @@ const _safeEncodeAsync = (_Err) => async (schema, value, _ctx) => {
 const _safeDecodeAsync = (_Err) => async (schema, value, _ctx) => {
 	return _safeParseAsync(_Err)(schema, value, _ctx);
 };
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/regexes.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/regexes.js
 /**
 * @deprecated CUID v1 is deprecated by its authors due to information leakage
 * (timestamps embedded in the id). Use {@link cuid2} instead.
@@ -1029,8 +1037,7 @@ const number$1 = /^-?\d+(?:\.\d+)?$/;
 const boolean$1 = /^(?:true|false)$/i;
 const lowercase = /^[^A-Z]*$/;
 const uppercase = /^[^a-z]*$/;
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/checks.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/checks.js
 const $ZodCheck = /*@__PURE__*/ $constructor("$ZodCheck", (inst, def) => {
 	var _a;
 	inst._zod ?? (inst._zod = {});
@@ -1325,8 +1332,7 @@ const $ZodCheckOverwrite = /*@__PURE__*/ $constructor("$ZodCheckOverwrite", (ins
 		payload.value = def.tx(payload.value);
 	};
 });
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/doc.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/doc.js
 var Doc = class {
 	constructor(args = [], closed = {}) {
 		this.content = [];
@@ -1359,15 +1365,13 @@ var Doc = class {
 		return new F(...Object.keys(this.closed), `return function (${this.args.join(", ")}) {\n${content.join("\n")}\n};`)(...Object.values(this.closed));
 	}
 };
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/versions.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/versions.js
 const version = {
 	major: 4,
 	minor: 6,
-	patch: 5
+	patch: 7
 };
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/schemas.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/schemas.js
 const $ZodType = /*@__PURE__*/ $constructor("$ZodType", (inst, def) => {
 	var _a;
 	inst ?? (inst = {});
@@ -1864,6 +1868,26 @@ const $ZodNever = /*@__PURE__*/ $constructor("$ZodNever", (inst, def) => {
 		return payload;
 	};
 });
+function capSize(inst, size) {
+	const caps = sizeCaps(inst._zod.def.checks);
+	if (!caps.length) return;
+	const cap = Math.min(...caps.map((c) => c[0]));
+	const parse = inst._zod.parse;
+	inst._zod.parse = (payload, ctx) => {
+		const n = size(payload.value);
+		if (n > cap && !ctx?.skipChecks && ctx?.direction !== "backward") {
+			for (const [max, ch] of sizeCaps(inst._zod.def.checks)) if (n > max && ch._zod.def.when(payload)) {
+				const start = payload.issues.length;
+				ch._zod.check(payload);
+				payload.issues[start].continue = false;
+				attachSchema(payload.issues, start, inst);
+				return payload;
+			}
+		}
+		return parse(payload, ctx);
+	};
+}
+const arraySize = (input) => Array.isArray(input) ? input.length : -1;
 function handleArrayResult(result, final, index) {
 	if (result.issues.length) final.issues.push(...prefixIssues(index, result.issues));
 	final.value[index] = result.value;
@@ -1901,6 +1925,7 @@ const $ZodArray = /*@__PURE__*/ $constructor("$ZodArray", (inst, def) => {
 		if (proms.length) return Promise.all(proms).then(() => payload);
 		return payload;
 	};
+	capSize(inst, arraySize);
 });
 function handlePropertyResult(result, final, key, input, optin, optout) {
 	const isPresent = key in input;
@@ -2009,7 +2034,7 @@ const $ZodObject = /*@__PURE__*/ $constructor("$ZodObject", (inst, def) => {
 		}
 		return propValues;
 	});
-	const isObject$2 = isObject;
+	const isObject$1 = isObject;
 	const catchall = def.catchall;
 	let value;
 	const memo = globalConfig.memoizer;
@@ -2017,7 +2042,7 @@ const $ZodObject = /*@__PURE__*/ $constructor("$ZodObject", (inst, def) => {
 	inst._zod.parse = (payload, ctx) => {
 		value ?? (value = _normalized.value);
 		const input = payload.value;
-		if (!isObject$2(input)) {
+		if (!isObject$1(input)) {
 			payload.issues.push({
 				expected: "object",
 				code: "invalid_type",
@@ -2147,7 +2172,7 @@ const $ZodObjectJIT = /*@__PURE__*/ $constructor("$ZodObjectJIT", (inst, def) =>
 		return doc.compile();
 	};
 	let fastpass;
-	const isObject$1 = isObject;
+	const isObject$2 = isObject;
 	const jit = !globalConfig.jitless;
 	const fastEnabled = jit && allowsEval.value;
 	const catchall = def.catchall;
@@ -2155,7 +2180,7 @@ const $ZodObjectJIT = /*@__PURE__*/ $constructor("$ZodObjectJIT", (inst, def) =>
 	inst._zod.parse = (payload, ctx) => {
 		value ?? (value = _normalized.value);
 		const input = payload.value;
-		if (!isObject$1(input)) {
+		if (!isObject$2(input)) {
 			payload.issues.push({
 				expected: "object",
 				code: "invalid_type",
@@ -2736,8 +2761,7 @@ function handleRefineResult(result, payload, input, inst) {
 		payload.issues.push(issue(_iss));
 	}
 }
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/memoizer.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/memoizer.js
 var $ZodCyclicError = class extends Error {
 	constructor() {
 		super(`Cannot parse a reference cycle that closes through a transform`);
@@ -2989,8 +3013,7 @@ function isBackEdge(ctx, value) {
 	const backEdges = ctx[STATE]?.backEdges;
 	return backEdges !== void 0 && isRef(value) && backEdges.has(value);
 }
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/locales/en.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/locales/en.js
 const error = () => {
 	const Sizable = {
 		string: {
@@ -3097,8 +3120,7 @@ const error = () => {
 function en_default() {
 	return { localeError: error() };
 }
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/registries.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/registries.js
 var _a;
 var $ZodRegistry = class {
 	constructor() {
@@ -3144,8 +3166,7 @@ function registry() {
 }
 (_a = globalThis).__zod_globalRegistry ?? (_a.__zod_globalRegistry = registry());
 const globalRegistry = globalThis.__zod_globalRegistry;
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/api.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/api.js
 function snapshotChecks(def) {
 	if (def.checks) def.checks = [...def.checks];
 	return def;
@@ -3653,8 +3674,7 @@ function _check(fn, params) {
 	ch._zod.check = fn;
 	return ch;
 }
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/to-json-schema.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/to-json-schema.js
 function assignProps(target, ...sources) {
 	for (const source of sources) for (const key of Reflect.ownKeys(source)) if (Object.prototype.propertyIsEnumerable.call(source, key)) assignProp(target, key, source[key]);
 	return target;
@@ -4097,8 +4117,7 @@ const createStandardJSONSchemaMethod = (schema, io, processors = {}) => (params)
 	extractDefs(ctx, schema);
 	return finalize(ctx, schema);
 };
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/core/json-schema-processors.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/json-schema-processors.js
 const narrowMin = (agg, key, value) => {
 	if (agg[key] === void 0 || value > agg[key]) agg[key] = value;
 };
@@ -4545,8 +4564,7 @@ const optionalProcessor = (schema, ctx, _json, params) => {
 	const seen = ctx.seen.get(schema);
 	seen.ref = def.innerType;
 };
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/classic/errors.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/classic/errors.js
 const _installedErrorProtos = /* @__PURE__ */ new WeakSet([Object.prototype, Error.prototype]);
 function _lazyMethod(proto, key, make) {
 	Object.defineProperty(proto, key, {
@@ -4596,8 +4614,7 @@ const initializer = (inst, issues) => {
 };
 const ZodError = /*@__PURE__*/ $constructor("ZodError", initializer);
 const ZodRealError = /*@__PURE__*/ $constructor("ZodError", initializer, void 0, { Parent: Error });
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/classic/parse.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/classic/parse.js
 const parse = /* @__PURE__ */ _parse(ZodRealError);
 const parseAsync = /* @__PURE__ */ _parseAsync(ZodRealError);
 const safeParse = /* @__PURE__ */ _safeParse(ZodRealError);
@@ -4610,8 +4627,7 @@ const safeEncode = /* @__PURE__ */ _safeEncode(ZodRealError);
 const safeDecode = /* @__PURE__ */ _safeDecode(ZodRealError);
 const safeEncodeAsync = /* @__PURE__ */ _safeEncodeAsync(ZodRealError);
 const safeDecodeAsync = /* @__PURE__ */ _safeDecodeAsync(ZodRealError);
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/classic/schemas.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/classic/schemas.js
 function _ensureDefaultLocale() {
 	if (!globalConfig.localeError) config(en_default());
 }
@@ -5480,13 +5496,11 @@ function refine(fn, _params = {}) {
 function superRefine(fn, params) {
 	return /* @__PURE__ */ _superRefine(fn, params);
 }
-//#endregion
-//#region node_modules/.pnpm/zod@4.6.5/node_modules/zod/v4/classic/iso.js
+// node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/classic/iso.js
 function datetime(params) {
 	return /* @__PURE__ */ _isoDateTime(ZodISODateTime, params);
 }
-//#endregion
-//#region src/format/result.ts
+// src/format/result.ts
 /**
 * The result file: what an eval harness writes after a run and hands to the action. It is the only
 * thing a project has to produce. Every field but the cases is optional, so a first version can be a
@@ -5583,8 +5597,7 @@ const resultSchema = object({
 	labels: record(string(), string()).optional().describe("What to group and compare runs by, such as a \"model\" label."),
 	cases: array(caseSchema).min(1).describe("The cases that ran.")
 }).describe("One run of an eval suite, as its harness writes it for the evalmark action.");
-//#endregion
-//#region src/import/common.ts
+// src/import/common.ts
 /**
 * Helpers every importer shares: stable ids, units, labels and the final validation against the
 * result format.
@@ -5743,8 +5756,7 @@ function validated(draft, path) {
 	const issues = parsed.error.issues.slice(0, 10).map((issue) => `- ${issue.path.map(String).join(".") || "the result"}: ${issue.message}`);
 	throw new Error(`${path} did not convert to a valid result:\n${issues.join("\n")}`);
 }
-//#endregion
-//#region src/import/inspect-schema.ts
+// src/import/inspect-schema.ts
 /**
 * The part of an Inspect AI eval log the importer reads. Its fields follow `EvalLog`, `EvalSpec`,
 * `EvalStats` and `EvalSample` in `inspect_ai/log/_log.py`, `Score` in `inspect_ai/scorer/_metric.py`,
@@ -5813,8 +5825,7 @@ const logSchema = object({
 		completed_at: string().nullish()
 	}).nullish()
 });
-//#endregion
-//#region src/import/inspect-scores.ts
+// src/import/inspect-scores.ts
 /** Inspect's letter values. */
 const letters = {
 	C: 1,
@@ -5913,8 +5924,7 @@ function checksOfScores(scores) {
 		score
 	};
 }
-//#endregion
-//#region src/import/inspect-transcript.ts
+// src/import/inspect-transcript.ts
 /**
 * The text of a message's content.
 *
@@ -5998,8 +6008,7 @@ function transcriptOf(messages) {
 		toolCalls: message.role === "assistant" ? toolCallsOf(message, results) : void 0
 	})));
 }
-//#endregion
-//#region src/import/zip.ts
+// src/import/zip.ts
 /**
 * A small zip reader: the central directory, ZIP64 included, and entries stored, deflated or
 * compressed with Zstandard, which is what Inspect AI writes in its `.eval` logs.
@@ -6161,8 +6170,7 @@ function readZip(buffer) {
 		}
 	};
 }
-//#endregion
-//#region src/import/inspect.ts
+// src/import/inspect.ts
 /** The prefix of a reference to a sample's attachment in an Inspect log. */
 const attachmentPrefix = "attachment://";
 /**
@@ -6322,8 +6330,7 @@ function importInspectEval(bytes) {
 	const readJson = (name) => JSON.parse(archive.read(name).toString("utf8"));
 	return [resultOf(logSchema.parse(readJson(headerName)), archive.names.filter((name) => name.startsWith("samples/") && name.endsWith(".json")).map((name) => sampleOf(readJson(name))))];
 }
-//#endregion
-//#region src/import/xml.ts
+// src/import/xml.ts
 /** The predefined entities. */
 const namedEntities = {
 	lt: "<",
@@ -6483,8 +6490,7 @@ function childrenNamed(element, name) {
 function descendantsNamed(element, name) {
 	return element.children.flatMap((child) => [...child.name === name ? [child] : [], ...descendantsNamed(child, name)]);
 }
-//#endregion
-//#region src/import/junit.ts
+// src/import/junit.ts
 /** The one check a JUnit test case makes: that it passed. */
 const passedCheck = {
 	id: "passed",
@@ -6636,8 +6642,7 @@ function importJunit(source) {
 		cases: [...group.cases.values()]
 	}));
 }
-//#endregion
-//#region src/import/promptfoo-schema.ts
+// src/import/promptfoo-schema.ts
 /**
 * The part of promptfoo's results file (`promptfoo eval -o results.json`) the importer reads. Its
 * fields follow `OutputFile`, `EvaluateSummaryV3`, `EvaluateResult` and `GradingResult` in
@@ -6711,8 +6716,7 @@ const promptfooFileSchema = object({
 	}),
 	config: object({ description: string().nullish() }).nullish()
 });
-//#endregion
-//#region src/import/promptfoo.ts
+// src/import/promptfoo.ts
 /** promptfoo's `failureReason` for a test that errored rather than failed an assertion. */
 const failureReasonError = 2;
 /** The API kinds that sit between a provider and a model in a promptfoo provider id. */
@@ -6970,8 +6974,7 @@ function importPromptfoo(data) {
 		cases: casesOf$1(group.rows)
 	}));
 }
-//#endregion
-//#region src/import/import-results.ts
+// src/import/import-results.ts
 /**
 * Importing other tools' eval output: detect the format of a file and convert it to one or more
 * results, each validated against the result format. A file holding several models gives one
@@ -7108,8 +7111,7 @@ async function importResults(path, format = "auto") {
 	}
 	return drafts.map((draft) => validated(draft, path));
 }
-//#endregion
-//#region src/action/inputs.ts
+// src/action/inputs.ts
 /**
 * The action's inputs, read from the `INPUT_<NAME>` variables GitHub sets, with the defaults of
 * `action.yml` when a variable is absent, so tests and the CLI get the same values as a workflow.
@@ -7307,8 +7309,7 @@ function readInputs(env) {
 		failOnError: booleanInput(env, "fail-on-error")
 	};
 }
-//#endregion
-//#region src/format/store.ts
+// src/format/store.ts
 /** The letter for each trial status in a run summary. */
 const trialLetters = {
 	pass: "P",
@@ -7388,8 +7389,7 @@ const defaultBranding = {
 const brandingPath = `${dataFolder}/branding.json`;
 /** The folder the project's logo is copied into, relative to the action's folder. */
 const brandingFolder = `${dataFolder}/branding`;
-//#endregion
-//#region src/format/totals.ts
+// src/format/totals.ts
 /**
 * A case's status from its trials' letters: `skip` when every trial was skipped, `pass` when every
 * other trial passed, `fail` when none did, `flaky` otherwise.
@@ -7445,8 +7445,7 @@ function totalsOf(cases, durationMs) {
 		durationMs: durationMs ?? sum((trial) => trial.durationMs)
 	};
 }
-//#endregion
-//#region src/action/attachment-files.ts
+// src/action/attachment-files.ts
 /**
 * Finding a result's attachment files on disk. A path is relative to the result file and must
 * stay inside its folder, symbolic links included. A file that is not there is reported, not
@@ -7506,7 +7505,7 @@ async function lookUp(folder, path) {
 	const source = await realpath(resolve(folder, path)).catch(() => void 0);
 	if (source === void 0) return { kind: "missing" };
 	if (!staysInside(folder, relative(folder, source))) return { kind: "unsafe" };
-	const info = await stat(source);
+	const info = await stat$1(source);
 	if (!info.isFile()) return { kind: "missing" };
 	return {
 		kind: "found",
@@ -7545,8 +7544,7 @@ async function loadAttachments(result, folder) {
 		missing
 	};
 }
-//#endregion
-//#region src/action/redact.ts
+// src/action/redact.ts
 /**
 * Redaction: values that look like secrets, and the strings the workflow names, are replaced in
 * every string of a result before anything is stored.
@@ -7602,8 +7600,7 @@ function redactValue(value, redact) {
 	if (value === null || typeof value !== "object") return value;
 	return Object.fromEntries(Object.entries(value).map(([key, item]) => [redact(key), redactValue(item, redact)]));
 }
-//#endregion
-//#region src/action/numbers.ts
+// src/action/numbers.ts
 /**
 * How numbers read in the comment, the summary and the badges.
 */
@@ -7636,8 +7633,7 @@ function formatCost(usd) {
 	const text = amount >= .01 || amount === 0 ? amount.toFixed(2) : amount.toPrecision(2);
 	return `${usd < 0 ? "-" : ""}$${amount === 0 ? "0" : text}`;
 }
-//#endregion
-//#region src/action/result-file.ts
+// src/action/result-file.ts
 /**
 * Reading the result file: parse it, validate it against the result format, add the workflow's
 * labels and redact secrets. A file another tool wrote (promptfoo, Inspect AI, JUnit XML) is
@@ -7695,8 +7691,7 @@ async function readResult(path, labels, redact) {
 		}
 	}, redact);
 }
-//#endregion
-//#region src/action/size.ts
+// src/action/size.ts
 /**
 * The folder's size: measured after each recording, reported in the job summary, and warned
 * about above `warn-size-mb`, with the inputs that make it smaller.
@@ -7715,7 +7710,7 @@ async function folderSize(folder) {
 		withFileTypes: true
 	}).catch(() => []);
 	let total = 0;
-	for (const entry of entries.filter((item) => item.isFile())) total += (await stat(join(entry.parentPath, entry.name))).size;
+	for (const entry of entries.filter((item) => item.isFile())) total += (await stat$1(join(entry.parentPath, entry.name))).size;
 	return total;
 }
 /**
@@ -7788,8 +7783,7 @@ function sizeWarning(report) {
 	if (limit === 0 || report.folderBytes <= limit) return void 0;
 	return [`The \`${report.folder}\` folder is ${formatBytes(report.folderBytes)}, above \`warn-size-mb\` (${formatBytes(limit)}).`, "To make it smaller, lower `keep-runs`, `keep-transcripts` or `keep-attachments`, or set `attachments: none`."].join(" ");
 }
-//#endregion
-//#region src/action/source.ts
+// src/action/source.ts
 /**
 * Where a run comes from: the workflow's `GITHUB_*` variables and its event payload give the
 * repository, commit, branch, pull request and workflow run, and the run's id.
@@ -7805,8 +7799,7 @@ function sizeWarning(report) {
 function runIdOf(startedAt, env) {
 	return `${new Date(startedAt).toISOString().replace(/\.\d+Z$/, "Z").replaceAll("-", "").replaceAll(":", "")}-${env.GITHUB_RUN_ID ? `${env.GITHUB_RUN_ID}-${env.GITHUB_RUN_ATTEMPT ?? "1"}` : randomBytes(4).toString("hex")}`.replace(/[^A-Za-z0-9.-]/g, "_");
 }
-//#endregion
-//#region src/action/badges.ts
+// src/action/badges.ts
 /**
 * Badges for the default branch's latest run: pass rate and cost, as flat SVG images and as
 * shields.io endpoint files, in `badges/` inside the folder.
@@ -7927,8 +7920,7 @@ async function writeBadges(folder, run) {
 		await writeFile(join(target, `${name}.json`), badgeEndpoint(badge));
 	}
 }
-//#endregion
-//#region src/action/index-file.ts
+// src/action/index-file.ts
 /**
 * The index, `data/index.json`, rebuilt from every run file in the folder. As it never merges, two
 * runs recorded at once never conflict: each adds its own file and the index follows.
@@ -8021,8 +8013,7 @@ function buildIndex(runs, suite, updatedAt) {
 		cases: casesOf(sorted)
 	};
 }
-//#endregion
-//#region src/action/branding.ts
+// src/action/branding.ts
 /**
 * The dashboard's branding: the title, the line under it and the logo the project gives through
 * the action's inputs, written into the folder on every run.
@@ -8076,8 +8067,7 @@ async function writeBranding(folder, input) {
 	};
 	await writeJson(join(folder, brandingPath), branding);
 }
-//#endregion
-//#region src/action/attachment-store.ts
+// src/action/attachment-store.ts
 /**
 * Whether a trial keeps its attachment files.
 *
@@ -8193,8 +8183,7 @@ function transcriptWithoutFiles(messages) {
 		};
 	});
 }
-//#endregion
-//#region src/action/build-run.ts
+// src/action/build-run.ts
 /**
 * Whether a trial's transcript is kept.
 *
@@ -8294,8 +8283,7 @@ function buildRun(draft) {
 		attachments
 	};
 }
-//#endregion
-//#region src/action/attachment-retention.ts
+// src/action/attachment-retention.ts
 /**
 * Retention of attachment files. A run past `keep-attachments` loses its files: its trials and
 * transcripts keep each attachment's media type, caption and size, without `file`. Files are
@@ -8367,8 +8355,7 @@ async function sweepAttachments(folder, kept) {
 	});
 	return unused.length;
 }
-//#endregion
-//#region src/action/retention.ts
+// src/action/retention.ts
 /**
 * Retention: which runs the folder keeps, and which of them keep their transcripts and their
 * attachment files. The run just recorded is always kept.
@@ -8495,8 +8482,7 @@ async function applyRetention(folder, plan) {
 function prunedAnything(pruned) {
 	return pruned.runs + pruned.transcripts + pruned.attachments + pruned.files > 0;
 }
-//#endregion
-//#region src/action/site.ts
+// src/action/site.ts
 /**
 * The dashboard's files: found next to the running bundle, and copied into the folder over the
 * previous version, leaving the data and the badges alone.
@@ -8533,8 +8519,7 @@ async function copySite(siteDir, folder) {
 	const files = await readdir(siteDir);
 	for (const name of files.filter((entry) => !kept.has(entry))) await cp(join(siteDir, name), join(folder, name), { recursive: true });
 }
-//#endregion
-//#region src/action/store.ts
+// src/action/store.ts
 /**
 * The store: records a run into the action's folder on disk. It writes the run file and its
 * transcripts, applies retention, rebuilds the index, writes the badges and copies the dashboard.
@@ -8567,7 +8552,7 @@ async function copyAttachments(folder, built) {
 		if (existsSync(path)) continue;
 		await mkdir(dirname(path), { recursive: true });
 		await copyFile(attachment.source, path);
-		added += (await stat(path)).size;
+		added += (await stat$1(path)).size;
 	}
 	return added;
 }
@@ -8589,7 +8574,7 @@ async function writeRun(folder, built) {
 	}
 	const runFile = join(folder, runPath(built.run.id));
 	await writeJson(runFile, built.run);
-	return added + (await stat(runFile)).size;
+	return added + (await stat$1(runFile)).size;
 }
 /**
 * Records a run into the folder.
@@ -8627,8 +8612,7 @@ async function storeRun(folder, draft, options) {
 		addedBytes
 	};
 }
-//#endregion
-//#region src/action/record.ts
+// src/action/record.ts
 /**
 * The warning about attachment files the result names but that are not there.
 *
@@ -8658,8 +8642,7 @@ function sizeReportOf(outcome, folder, warnSizeMb) {
 		pruned: retention
 	};
 }
-//#endregion
-//#region src/cli/demo-catalog.ts
+// src/cli/demo-catalog.ts
 /** The models compared: one cheap and fast, one strong and costly, one self-hosted. */
 const demoModels = [
 	{
@@ -9004,8 +8987,7 @@ const demoCases = [
 		since: 6
 	}
 ];
-//#endregion
-//#region src/cli/demo-random.ts
+// src/cli/demo-random.ts
 /**
 * A step of the mulberry32 generator.
 *
@@ -9049,8 +9031,7 @@ function seededRandom(seed) {
 		hex
 	};
 }
-//#endregion
-//#region src/cli/demo-png.ts
+// src/cli/demo-png.ts
 /**
 * A small PNG encoder for the demo's screenshots: an indexed image of a few colours, compressed
 * with `node:zlib`. Enough for flat drawings of a few kilobytes, with no dependency.
@@ -9148,8 +9129,7 @@ function encodePng(image) {
 	}
 	return bytes;
 }
-//#endregion
-//#region src/cli/demo-screenshot.ts
+// src/cli/demo-screenshot.ts
 /**
 * The demo's screenshots: a flat drawing of the panel a trial wrote, the right one or a wrong one,
 * alone as the `write_panel` tool saw it or inside the dashboard at the end of the trial. Each is
@@ -9405,7 +9385,7 @@ const table = (canvas, plot, random, right) => {
 * @param random - The generator.
 * @param right - Whether the panel is the right one.
 */
-const stat$1 = (canvas, plot, random, right) => {
+const stat = (canvas, plot, random, right) => {
 	const digit = {
 		width: 20,
 		height: 36
@@ -9475,7 +9455,7 @@ const painters = {
 	timeseries,
 	bar: bars,
 	table,
-	stat: stat$1,
+	stat,
 	heatmap
 };
 /**
@@ -9618,8 +9598,7 @@ async function writeScreenshots(folder) {
 		await writeFile(path, screenshotOf(demoCase, variant, view));
 	}
 }
-//#endregion
-//#region src/cli/demo-transcript.ts
+// src/cli/demo-transcript.ts
 /**
 * Rounds an amount of US dollars to the millionth.
 *
@@ -9829,8 +9808,7 @@ function conversationOf(random, model, demoCase, outcome, startMs) {
 	write.assistant({ content: `The dashboard is ready: "${demoCase.title}", one ${demoCase.panel} panel.` });
 	return write.finish();
 }
-//#endregion
-//#region src/cli/demo-data.ts
+// src/cli/demo-data.ts
 /** How many commits `main` gets over the history. */
 const mainCommits = 24;
 /** How long the history lasts. */
@@ -10066,8 +10044,7 @@ function demoHistory(options = {}) {
 	const random = seededRandom(options.seed ?? 20261008);
 	return commitsOf(random, (options.end ?? /* @__PURE__ */ new Date("2026-10-08T12:00:00Z")).getTime()).flatMap((commit) => commit.models.map((model, index) => runOf(random, commit, model, commit.time + index * 24e4))).sort((first, second) => first.recordedAt.localeCompare(second.recordedAt));
 }
-//#endregion
-//#region src/cli/serve.ts
+// src/cli/serve.ts
 /**
 * Serving a folder over HTTP on the local machine, for the dashboard: `evalmark preview` and
 * `evalmark demo` both use it.
@@ -10198,8 +10175,7 @@ function portOf(value) {
 	if (!/^\d+$/.test(value) || port > 65535) throw new Error(`--port takes a number from 0 to 65535, not \`${value}\`.`);
 	return port;
 }
-//#endregion
-//#region src/cli/demo.ts
+// src/cli/demo.ts
 /**
 * `evalmark demo`: records a synthetic history into a local folder with the action's store, one run
 * at a time as the action would, and serves the dashboard on it.
@@ -10323,8 +10299,7 @@ async function demoCommand(args) {
 	const server = await serveFolder(folder, port, values.host);
 	process.stdout.write(`The dashboard is on ${server.url}\n`);
 }
-//#endregion
-//#region src/cli/import.ts
+// src/cli/import.ts
 /**
 * `evalmark import`: converts another tool's eval output (promptfoo, Inspect AI, JUnit XML) to result
 * files, one per model, so the conversion can be read before it is recorded.
@@ -10378,8 +10353,7 @@ async function importCommand(args) {
 	await Promise.all(results.map((result, index) => writeFile(paths[index] ?? "", `${JSON.stringify(result, null, 2)}\n`)));
 	return paths;
 }
-//#endregion
-//#region src/cli/preview.ts
+// src/cli/preview.ts
 /**
 * `evalmark preview`: serves the dashboard of a branch of the current clone, or of a folder on disk,
 * with nothing published.
@@ -10496,8 +10470,7 @@ async function previewCommand(args) {
 	process.stdout.write(`Serving ${values.dir ?? `${values.folder} from ${values.branch}`} at ${server.url}\n`);
 	return server;
 }
-//#endregion
-//#region src/cli/record.ts
+// src/cli/record.ts
 /**
 * `evalmark record`: records a result into a local folder with the action's store, without git, and
 * copies the dashboard next to the data.
@@ -10603,8 +10576,7 @@ async function recordCommand(args, siteDir = defaultSiteDir()) {
 		dir
 	};
 }
-//#endregion
-//#region src/cli/main.ts
+// src/cli/main.ts
 /**
 * The `evalmark` command: `record` a result into a local folder, `import` another tool's output,
 * `preview` a branch's dashboard, `demo` a synthetic history.
@@ -10659,5 +10631,4 @@ async function main(argv) {
 	}
 }
 process.exitCode = await main(process.argv.slice(2));
-//#endregion
 export {};
